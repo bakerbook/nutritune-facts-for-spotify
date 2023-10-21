@@ -1,0 +1,23 @@
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "modules": "cjs"
+            }
+        ],
+        [
+            "@babel/preset-react",
+            {
+                "typescript": true
+            }
+        ],
+        [
+            "@babel/preset-typescript",
+            {
+                "isTSX": true,
+                "allExtensions": true
+            }
+        ]
+    ]
+}
