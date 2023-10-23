@@ -1,4 +1,4 @@
-import path from "path"
+import path from 'path'
 
 const __dirname = path.resolve('')
 
@@ -10,7 +10,7 @@ export default {
         filename: 'bundle.js'
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js']
+        extensions: ['.tsx', '.ts', '.js', '.css']
     },
     module: {
         rules: [
@@ -18,6 +18,10 @@ export default {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
                 use: 'babel-loader'
+            },
+            {
+                test: /\.css$/,
+                use: 'css-loader'
             }
         ]
     }

@@ -1,1 +1,14 @@
-/* test */
+* {
+    font-family: sans-serif;
+}
+
+body {
+    background-color: #191414;
+}
+
+h1 {
+    font-size: 500%;
+    color: #1DB954;
+    display: flex;
+    justify-content: center;
+}
