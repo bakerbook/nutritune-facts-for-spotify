@@ -1,9 +1,21 @@
+:root{
+    --green: #1DB954;
+    --white: #FFFFFF;
+    --black: #121212;
+}
+
+
 * {
     font-family: sans-serif;
 }
 
 body {
-    background-color: #191414;
+    background-color: var(--white);
+}
+@media(prefers-color-scheme: dark){
+    body{
+        background-color: var(--black);
+    }
 }
 
 h1 {
