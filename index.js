@@ -32,25 +32,27 @@ app.get("/login", (req, res) => {
     )
 })
 
-//THIS WHOLE THING NEEDS TO BE FIXED AND ISNT FINISHED
 app.get("/callback", (req, res) => {
     let code = req.query.code || null
     //TODO: implement "state"
     if(code === null){
         res.redirect("/?" + querystring.stringify({ error: "no_code_received" }))
     }else{
+        const params = new URLSearchParams()
+        
+        params.append("client_id", process.env.client_id)
+        params.append("client_secret", process.env.client_secret)
+        params.append("grant_type", "authorization_code")
+        params.append("code", code)
+        params.append("redirect_uri", "http://localhost:3000/callback")
+
         fetch("https://accounts.spotify.com/api/token", {
             method: "POST",
             headers: {
-                content_type: "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: new URLSearchParams({
-                client_id: process.env.client_id,
-                grant_type: "authorization_code",
-                code,
-                redirect_uri: "http://localhost:3000"
-            })
-        }).then(data => {
+            body: params
+        }).then(response => response.json()).then(data => {
             console.log(data)
         })
     }
