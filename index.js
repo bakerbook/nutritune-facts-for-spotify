@@ -6,8 +6,6 @@ import querystring from "node:querystring"
 
 dotenv.config()
 
-console.log(process.env.CLIENT_ID)
-
 const app = express()
 
 const port = 3000
@@ -54,8 +52,15 @@ app.get("/callback", (req, res) => {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             body: params
-        }).then(response => response.json()).then(data => {
-            console.log(data)
+        }).then(response => response.json()).then(async data => {
+            const accessToken = data["access_token"]
+            const refreshToken = data["refresh_token"]
+            const username = await getProfileName(accessToken)
+            res.redirect("/?" + querystring.stringify({
+                refresh_token: refreshToken,
+                access_token: accessToken,
+                username: username
+            }))
         })
     }
 })
@@ -63,3 +68,13 @@ app.get("/callback", (req, res) => {
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
+
+async function getProfileName(accessToken){
+    const response = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    return data["display_name"]
+}
