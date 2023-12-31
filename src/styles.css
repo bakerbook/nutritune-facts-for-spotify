@@ -11,6 +11,7 @@
 
 body {
     background-color: var(--white);
+    color: var(--black);
     justify-content: center;
     align-items: center;
 }
@@ -18,6 +19,7 @@ body {
 @media(prefers-color-scheme: dark){
     body{
         background-color: var(--black);
+        color: var(--white);
     }
 }
 
