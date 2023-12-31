@@ -6,6 +6,8 @@ import querystring from "node:querystring"
 
 dotenv.config()
 
+console.log(process.env.CLIENT_ID)
+
 const app = express()
 
 const port = 3000
@@ -25,9 +27,9 @@ app.get("/login", (req, res) => {
     res.redirect("https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
-            client_id: process.env.client_id,
+            client_id: process.env.CLIENT_ID,
             scope: scope,
-            redirect_uri: "http://localhost:3000/callback",
+            redirect_uri: `${process.env.TEST_SITE}/callback`,
         })
     )
 })
@@ -40,11 +42,11 @@ app.get("/callback", (req, res) => {
     }else{
         const params = new URLSearchParams()
         
-        params.append("client_id", process.env.client_id)
-        params.append("client_secret", process.env.client_secret)
+        params.append("client_id", process.env.CLIENT_ID)
+        params.append("client_secret", process.env.CLIENT_SECRET)
         params.append("grant_type", "authorization_code")
         params.append("code", code)
-        params.append("redirect_uri", "http://localhost:3000/callback")
+        params.append("redirect_uri", `${process.env.TEST_SITE}/callback`)
 
         fetch("https://accounts.spotify.com/api/token", {
             method: "POST",
