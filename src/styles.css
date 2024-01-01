@@ -4,7 +4,6 @@
     --black: #121212;
 }
 
-
 * {
     font-family: sans-serif;
 }
@@ -16,16 +15,9 @@ body {
     align-items: center;
 }
 
-@media(prefers-color-scheme: dark){
-    body{
-        background-color: var(--black);
-        color: var(--white);
-    }
-}
-
 h1 {
-    font-size: 500%;
-    color: #1DB954;
+    font-size: 64px;
+    color: var(--green);
     display: flex;
     justify-content: center;
 }
@@ -49,4 +41,45 @@ a.button{
     border-radius: 4px;
     font-size: 36px;
     user-select: none;
+}
+a.button:hover{
+    background-color: #199e48
+}
+
+#loginBox{
+    width: 25%;
+    height: 186px;
+    justify-content: center;
+    text-align: center;
+    margin: auto;
+}
+#loginBox h2{
+    font-size: 36px;
+    color: var(--black)
+}
+
+#loginBox button{
+    background-color: #FF0000;
+    color: var(--white);
+    font-weight: 900;
+    border-radius: 8px;
+    border-style: none;
+    width: 32%;
+    height: 24%;
+}
+#loginBox button:hover{
+    background-color: #bf0000;
+    cursor: pointer;
+}
+
+/* for dark mode users */
+@media(prefers-color-scheme: dark){
+    body{
+        background-color: var(--black);
+        color: var(--white);
+    }
+    #loginBox h2{
+        color: var(--white)
+    }
+    
 }

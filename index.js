@@ -55,11 +55,12 @@ app.get("/callback", (req, res) => {
         }).then(response => response.json()).then(async data => {
             const accessToken = data["access_token"]
             const refreshToken = data["refresh_token"]
-            const username = await getProfileName(accessToken)
+            const { username, user_id } = await getProfileName(accessToken)
             res.redirect("/?" + querystring.stringify({
                 refresh_token: refreshToken,
                 access_token: accessToken,
-                username: username
+                username: username,
+                user_id: user_id
             }))
         })
     }
@@ -76,5 +77,5 @@ async function getProfileName(accessToken){
         }
     })
     const data = await response.json()
-    return data["display_name"]
+    return { username: data["display_name"], user_id: data["id"] }
 }
