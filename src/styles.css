@@ -41,9 +41,12 @@ a.button{
     border-radius: 4px;
     font-size: 36px;
     user-select: none;
+    transition: transform 0.2s;
 }
+
 a.button:hover{
-    background-color: #199e48
+    background-color: #199e48;
+    transform: scale(1.1);
 }
 
 #loginBox{
@@ -66,10 +69,12 @@ a.button:hover{
     border-style: none;
     width: 32%;
     height: 24%;
+    transition: transform 0.2s;
 }
 #loginBox button:hover{
     background-color: #bf0000;
     cursor: pointer;
+    transform: scale(1.1);
 }
 
 /* for dark mode users */
