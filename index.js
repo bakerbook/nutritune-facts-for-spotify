@@ -38,14 +38,14 @@ app.get("/callback", (req, res) => {
     if(code === null){
         res.redirect("/?" + querystring.stringify({ error: "no_code_received" }))
     }else{
-        const params = new URLSearchParams()
+        const params = new URLSearchParams({
+            "client_id": process.env.CLIENT_ID,
+            "client_secret": process.env.CLIENT_SECRET,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": `${process.env.TEST_SITE}/callback`
+        })
         
-        params.append("client_id", process.env.CLIENT_ID)
-        params.append("client_secret", process.env.CLIENT_SECRET)
-        params.append("grant_type", "authorization_code")
-        params.append("code", code)
-        params.append("redirect_uri", `${process.env.TEST_SITE}/callback`)
-
         fetch("https://accounts.spotify.com/api/token", {
             method: "POST",
             headers: {
@@ -64,6 +64,25 @@ app.get("/callback", (req, res) => {
             }))
         })
     }
+})
+
+app.post("/getToken", (req, res) => {
+    const refreshToken = req.body["refresh_token"]
+    const params = new URLSearchParams({
+        "grant_type": "refresh_token",
+        "refresh_token": refreshToken,
+        "client_id": process.env.CLIENT_ID,
+        "client_secret": process.env.CLIENT_SECRET
+    })
+    fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: params
+    }).then(response => response.json()).then(data => {
+        res.send({ "access_token": data["access_token"] })
+    })
 })
 
 app.listen(port, () => {
