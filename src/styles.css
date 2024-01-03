@@ -116,9 +116,17 @@ h2{
     outline: dashed red 1px;
 }
 
+.playlist{
+    display: inline-block;
+    vertical-align: top
+}
+
 .playlist img{
     width: 148px;
     height: 148px;
+    &:hover{
+        cursor: pointer;
+    }
 }
 
 /* for dark mode users */

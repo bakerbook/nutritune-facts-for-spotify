@@ -51,7 +51,6 @@ export default function LoginComponent(){
         )
     }else{
         if(Date.now() > JSON.parse(localStorage.getItem("access_token"))["expiration"]){
-            alert("NEW TOKEN NEEDED")
             getNewToken().then((code) => {
                 localStorage.setItem("access_token", JSON.stringify({
                     "token": code,

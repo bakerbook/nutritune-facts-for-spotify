@@ -93,6 +93,13 @@ app.post("/getPlaylists", async (req, res) => {
     res.send(JSON.stringify(playlists))
 })
 
+app.post("/getPlaylistDetails", async (req, res) => {
+    const playlistId = req.body["playlist_id"]
+    const accessToken = JSON.parse(req.body["access_token"])["token"]
+    const data = await getPlaylistDetails(playlistId, accessToken)
+    res.send(JSON.stringify(data))
+})
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
@@ -119,8 +126,59 @@ async function getPlaylists(userId, accessToken){
         playlists.push({
             name: playlist["name"],
             cover: playlist["images"][0]["url"],
-            url: playlist["href"]
+            id: playlist["href"].split("playlists/")[1]
         })
     })
     return playlists
+}
+
+async function getPlaylistDetails(playlistId, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const artistData = {}
+    let data = await response.json()
+    let total = data["tracks"]["total"]
+    for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
+        const currentSet = await getTracks(playlistId, i, accessToken)
+        currentSet["items"].forEach(song => {
+            song["track"]["artists"].forEach(artist => {
+                let name = artist["name"]
+                if(!(name in artistData)){
+                    artistData[name] = 1
+                }else{
+                    artistData[name] = artistData[name] + 1
+                }
+            })
+        })
+    }
+    let top_artist = {
+        name: Object.keys(artistData)[0],
+        number: Object.values(artistData)[0]
+    }
+    for(const [artistName, number] of Object.entries(artistData)){
+        if(number > top_artist["number"]){
+            top_artist["number"] = number
+            top_artist["name"] = artistName
+        }
+    }
+
+    return {
+        "playlist_name": data["name"],
+        "playlist_owner": data["owner"]["display_name"],
+        "track_count": total,
+        "top_artist": top_artist
+    }
+}
+
+async function getTracks(playlistId, offset, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${offset}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}` 
+        }
+    })
+    const data = await response.json()
+    return data
 }
