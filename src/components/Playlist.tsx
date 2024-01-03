@@ -1,8 +1,8 @@
-export default function Playlist({ playlistName, playlistIcon }){
+export default function Playlist({ name, icon }){
     return(
         <div class="playlist">
-            <img src={playlistIcon} alt={playlistName}></img>
-            <p>{playlistName}</p>
+            <img src={icon} alt={name}></img>
+            <p>{name}</p>
         </div>
     )
 }

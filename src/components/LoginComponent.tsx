@@ -51,19 +51,29 @@ export default function LoginComponent(){
         )
     }else{
         if(Date.now() > JSON.parse(localStorage.getItem("access_token"))["expiration"]){
+            alert("NEW TOKEN NEEDED")
             getNewToken().then((code) => {
                 localStorage.setItem("access_token", JSON.stringify({
                     "token": code,
                     "expiration": Date.now() + 3600000
                 }))
+            }).then(() => {
+                return(
+                    <div>
+                        <h2>Logged in as {username}</h2>
+                        <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
+                        <SelectPlaylist />
+                    </div>
+                )
             })
+        }else{
+            return(
+                <div>
+                    <h2>Logged in as {username}</h2>
+                    <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
+                    <SelectPlaylist />
+                </div>
+            )
         }
-        return(
-            <div>
-                <h2>Logged in as {username}</h2>
-                <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
-                <SelectPlaylist />
-            </div>
-        )
     }
 }

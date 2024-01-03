@@ -3,6 +3,7 @@ import bodyParser from "body-parser"
 import path from "path"
 import * as dotenv from "dotenv"
 import querystring from "node:querystring"
+import { access } from "fs"
 
 dotenv.config()
 
@@ -85,6 +86,13 @@ app.post("/getToken", (req, res) => {
     })
 })
 
+app.post("/getPlaylists", async (req, res) => {
+    const userId = req.body["user_id"]
+    const accessToken = JSON.parse(req.body["access_token"])["token"]
+    const playlists = await getPlaylists(userId, accessToken)
+    res.send(JSON.stringify(playlists))
+})
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
@@ -97,4 +105,22 @@ async function getProfileName(accessToken){
     })
     const data = await response.json()
     return { username: data["display_name"], user_id: data["id"] }
+}
+
+async function getPlaylists(userId, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=50&offset=0`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    const playlists = []
+    data["items"].forEach(playlist => {
+        playlists.push({
+            name: playlist["name"],
+            cover: playlist["images"][0]["url"],
+            url: playlist["href"]
+        })
+    })
+    return playlists
 }
