@@ -1,5 +1,5 @@
 export default function Header(){
     return(
-        <h1>Spotify Playlist Info</h1>
+        <h1 className="centered">Spotify Playlist Info</h1>
     )
 }

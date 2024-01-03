@@ -1,3 +1,5 @@
+import SelectPlaylist from "./SelectPlaylist"
+
 function logout(){
     localStorage.setItem("username", "null")
     localStorage.setItem("refresh_token", "null")
@@ -45,7 +47,7 @@ export default function LoginComponent(){
 
     if(refreshToken == "null" || username == "null"){
         return(
-            <a href={window.location.href + "login"} className="button">Log in with Spotify</a>
+            <a href={window.location.href + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
         )
     }else{
         if(Date.now() > JSON.parse(localStorage.getItem("access_token"))["expiration"]){
@@ -57,9 +59,10 @@ export default function LoginComponent(){
             })
         }
         return(
-            <div id="loginBox">
+            <div>
                 <h2>Logged in as {username}</h2>
-                <button onClick={logout}>Log out</button>
+                <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
+                <SelectPlaylist />
             </div>
         )
     }
