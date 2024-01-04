@@ -91,6 +91,7 @@ h2{
 #selectPlaylistBox{
     outline: solid blue 1px;
     width: 1000px;
+    height: auto;
     margin: 16px auto;
     justify-content: center;
 }
@@ -113,6 +114,7 @@ h2{
 #playlistContainer{
     width: 648px;
     height: 648px;
+    height: auto;
     outline: dashed red 1px;
 }
 
