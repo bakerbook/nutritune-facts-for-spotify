@@ -139,11 +139,13 @@ async function getPlaylistDetails(playlistId, accessToken){
         }
     })
     const artistData = {}
+    let totalDurationMilliseconds = 0
     let data = await response.json()
     let total = data["tracks"]["total"]
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
         currentSet["items"].forEach(song => {
+            totalDurationMilliseconds += song["track"]["duration_ms"]
             song["track"]["artists"].forEach(artist => {
                 let name = artist["name"]
                 if(!(name in artistData)){
@@ -164,12 +166,17 @@ async function getPlaylistDetails(playlistId, accessToken){
             top_artist["name"] = artistName
         }
     }
+    const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
+    const averageSongDurationString = String(averageSongDuration.split(".")[0]) + ":" + String(averageSongDuration.split(".")[1] * 60).substring(0, 2)
 
     return {
         "playlist_name": data["name"],
         "playlist_owner": data["owner"]["display_name"],
         "track_count": total,
-        "top_artist": top_artist
+        "top_artist": top_artist,
+        "playlist_likes": data["followers"]["total"],
+        "public": data["public"],
+        "average_song_duration": averageSongDurationString
     }
 }
 
