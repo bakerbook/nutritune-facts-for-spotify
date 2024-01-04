@@ -123,9 +123,15 @@ async function getPlaylists(userId, accessToken){
     const data = await response.json()
     const playlists = []
     data["items"].forEach(playlist => {
+        let cover = ""
+        try{
+            cover = playlist["images"][0]["url"]
+        }catch(err){
+            cover = null
+        }
         playlists.push({
             name: playlist["name"],
-            cover: playlist["images"][0]["url"],
+            cover: cover,
             id: playlist["href"].split("playlists/")[1]
         })
     })
