@@ -18,6 +18,7 @@ export default function SelectPlaylist(){
     const [visibility, setVisibility] = useState("hidden")
     const [playlists, setPlaylists] = useState(false)
     const [canvasData, setCanvasData] = useState(false)
+    let selected: HTMLImageElement | null = null
 
     async function getPlaylistDetails(id: string){
         const response = await fetch(document.location.href + "getPlaylistDetails", {
@@ -46,7 +47,12 @@ export default function SelectPlaylist(){
                 if(!details.target.alt){
                     return
                 }
-                getPlaylistDetails(details.target.alt)
+                if(selected != null){
+                    selected.className = selected.className.replace(" highlighted", "")
+                }
+                selected = details.target
+                selected.className += " highlighted"
+                getPlaylistDetails(selected.alt)
             }}>
                 {
                     !playlists ? (
