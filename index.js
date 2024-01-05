@@ -1,9 +1,8 @@
-import express, { query } from "express"
+import express from "express"
 import bodyParser from "body-parser"
 import path from "path"
 import * as dotenv from "dotenv"
 import querystring from "node:querystring"
-import { access } from "fs"
 
 dotenv.config()
 
@@ -123,12 +122,10 @@ async function getPlaylists(userId, accessToken){
     const data = await response.json()
     const playlists = []
     data["items"].forEach(playlist => {
-        let cover = ""
-        try{
-            cover = playlist["images"][0]["url"]
-        }catch(err){
-            cover = null
+        if(playlist["images"].length == 0){
+            return
         }
+        let cover = playlist["images"][0]["url"]
         playlists.push({
             name: playlist["name"],
             cover: cover,
@@ -165,10 +162,11 @@ async function getPlaylistDetails(playlistId, accessToken){
             })
         })
     }
+
     let top_artist = {
         name: Object.keys(artistData)[0],
         number: Object.values(artistData)[0]["songNumber"],
-        id: null,
+        id: Object.values(artistData)[0]["id"]
     }
     
     for(const [artistName, obj] of Object.entries(artistData)){
@@ -178,6 +176,7 @@ async function getPlaylistDetails(playlistId, accessToken){
             top_artist["id"] = obj["id"]
         }
     }
+
     const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
     const averageSongDurationString = String(averageSongDuration.split(".")[0]) + ":" + String(averageSongDuration.split(".")[1] * 60).substring(0, 2)
 
