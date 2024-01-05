@@ -18,7 +18,7 @@ export default function SelectPlaylist(){
     const [visibility, setVisibility] = useState("hidden")
     const [playlists, setPlaylists] = useState(false)
     const [canvasData, setCanvasData] = useState(false)
-    let selected: HTMLImageElement | null = null
+    let selected = null
 
     async function getPlaylistDetails(id: string){
         const response = await fetch(document.location.href + "getPlaylistDetails", {
@@ -29,7 +29,7 @@ export default function SelectPlaylist(){
             body: JSON.stringify({ "access_token": localStorage.getItem("access_token"), "playlist_id": id })
         })
         const data = await response.json()
-        setCanvasData(data)
+        await setCanvasData(data)
     }
 
     useEffect(() => {
@@ -44,15 +44,14 @@ export default function SelectPlaylist(){
         <div id="selectPlaylistBox" className="centered">
             <button onClick={() => setVisibility(visibility == "hidden" ? "visible" : "hidden")} id="selectPlaylistButton" className="hoverAnimation centered">Select playlist</button>
             <div className={visibility + " centered"} id="playlistContainer" onClick={details => {
-                if(!details.target.alt){
+                if(!details.target.alt || details.target == selected){
                     return
                 }
-                if(selected != null){
+                if(selected){
                     selected.className = selected.className.replace(" highlighted", "")
                 }
                 selected = details.target
                 selected.className += " highlighted"
-                getPlaylistDetails(selected.alt)
             }}>
                 {
                     !playlists ? (
