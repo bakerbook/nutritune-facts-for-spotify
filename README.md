@@ -7,3 +7,4 @@ A website that shows the user information about their playlists.
 - [ ] Validate that the user account/name details haven't changed whenever they log in
 - [ ] Add support for playlists with no cover image (aka no songs on them)
 - [ ] Add error checking for pretty much every request
+- [ ] Eventually migrate index.js to TypeScript

@@ -152,6 +152,10 @@ h2{
     }
 }
 
+canvas{
+    border: 2px dotted yellow;
+}
+
 /* for dark mode users */
 @media(prefers-color-scheme: dark){
     body{

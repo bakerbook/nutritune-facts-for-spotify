@@ -155,35 +155,61 @@ async function getPlaylistDetails(playlistId, accessToken){
             song["track"]["artists"].forEach(artist => {
                 let name = artist["name"]
                 if(!(name in artistData)){
-                    artistData[name] = 1
+                    artistData[name] = {
+                        songNumber: 1,
+                        id: artist["href"].split("artists/")[1]
+                    }
                 }else{
-                    artistData[name] = artistData[name] + 1
+                    artistData[name]["songNumber"] = artistData[name]["songNumber"] + 1
                 }
             })
         })
     }
     let top_artist = {
         name: Object.keys(artistData)[0],
-        number: Object.values(artistData)[0]
+        number: Object.values(artistData)[0]["songNumber"],
+        id: null,
     }
-    for(const [artistName, number] of Object.entries(artistData)){
-        if(number > top_artist["number"]){
-            top_artist["number"] = number
+    
+    for(const [artistName, obj] of Object.entries(artistData)){
+        if(obj["songNumber"] > top_artist["number"]){
+            top_artist["number"] = obj["songNumber"]
             top_artist["name"] = artistName
+            top_artist["id"] = obj["id"]
         }
     }
     const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
     const averageSongDurationString = String(averageSongDuration.split(".")[0]) + ":" + String(averageSongDuration.split(".")[1] * 60).substring(0, 2)
 
+    let playlist_icon = null
+
+    top_artist["picture"] = await getProfilePicture(top_artist["id"], accessToken)
+    delete top_artist["id"]
+
+    try{
+        playlist_icon = data["images"][0]["url"]
+    }catch(err){}
+
     return {
         "playlist_name": data["name"],
         "playlist_owner": data["owner"]["display_name"],
+        "playlist_icon": playlist_icon,
         "track_count": total,
         "top_artist": top_artist,
         "playlist_likes": data["followers"]["total"],
         "public": data["public"],
         "average_song_duration": averageSongDurationString
     }
+}
+
+async function getProfilePicture(id, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/artists/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    return data["images"][0]["url"]
 }
 
 async function getTracks(playlistId, offset, accessToken){

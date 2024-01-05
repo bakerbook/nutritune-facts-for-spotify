@@ -62,7 +62,7 @@ export default function SelectPlaylist(){
                                 <PlaylistList playlists={playlists}/>
                             )
                         }
-                        <button className="hoverAnimation centered">Choose this playlist</button>
+                        <button onClick={() => {getPlaylistDetails(selected.alt); setVisibility(false)}} className="hoverAnimation centered">Choose this playlist</button>
                     </div>
                 ) : (
                     null
@@ -73,7 +73,7 @@ export default function SelectPlaylist(){
                     !canvasData ? (
                         <p>No playlist data</p>
                     ) : (
-                        <DataDisplay songDuration={canvasData["average_song_duration"]} playlistLikes={canvasData["playlist_likes"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} isPublic={canvasData["public"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]}/>
+                        <DataDisplay songDuration={canvasData["average_song_duration"]} playlistLikes={canvasData["playlist_likes"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} isPublic={canvasData["public"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
                     )
                 }
             </div>
