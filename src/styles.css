@@ -14,17 +14,11 @@
     }
 }
 
-.visible{
-    visibility: visible;
-}
-.hidden{
-    visibility: hidden;
-}
-
 .centered{
     margin-left: auto;
     margin-right: auto;
     display: block;
+    text-align: center;
     justify-content: center;
 }
 
@@ -50,6 +44,10 @@ h1 {
 
 p {
     font-weight: bolder;
+}
+
+ul{
+    margin-bottom: 4;
 }
 
 a.button{
@@ -104,6 +102,19 @@ h2{
     height: auto;
     margin: 16px auto;
     justify-content: center;
+}
+#selectPlaylistBox div button{
+    background-color: var(--green);
+    border-style: none;
+    border-radius: 32px;
+    width: 36%;
+    height: 64px;
+    color: var(--white);
+    font-size: 32px;
+    font-weight: bold;
+    &:hover{
+        background-color: #199e48
+    }
 }
 
 #selectPlaylistButton{

@@ -15,7 +15,7 @@ async function getPlaylists(){
 }
 
 export default function SelectPlaylist(){
-    const [visibility, setVisibility] = useState("hidden")
+    const [visible, setVisibility] = useState(false)
     const [playlists, setPlaylists] = useState(false)
     const [canvasData, setCanvasData] = useState(false)
     let selected = null
@@ -42,25 +42,32 @@ export default function SelectPlaylist(){
 
     return(
         <div id="selectPlaylistBox" className="centered">
-            <button onClick={() => setVisibility(visibility == "hidden" ? "visible" : "hidden")} id="selectPlaylistButton" className="hoverAnimation centered">Select playlist</button>
-            <div className={visibility + " centered"} id="playlistContainer" onClick={details => {
-                if(!details.target.alt || details.target == selected){
-                    return
-                }
-                if(selected){
-                    selected.className = selected.className.replace(" highlighted", "")
-                }
-                selected = details.target
-                selected.className += " highlighted"
-            }}>
-                {
-                    !playlists ? (
-                        <p>Loading...</p>
-                    ) : (
-                        <PlaylistList playlists={playlists}/>
-                    )
-                }
-            </div>
+            <button onClick={() => setVisibility(visible == false ? true : false)} id="selectPlaylistButton" className="hoverAnimation centered">Select playlist</button>
+            {
+                visible == true ? (
+                    <div className="centered" id="playlistContainer" onClick={details => {
+                        if(!details.target.alt || details.target == selected){
+                            return
+                        }
+                        if(selected){
+                            selected.className = selected.className.replace(" highlighted", "")
+                        }
+                        selected = details.target
+                        selected.className += " highlighted"
+                    }}>
+                        {
+                            !playlists ? (
+                                <p>Loading...</p>
+                            ) : (
+                                <PlaylistList playlists={playlists}/>
+                            )
+                        }
+                        <button className="hoverAnimation centered">Choose this playlist</button>
+                    </div>
+                ) : (
+                    null
+                )
+            }
             <div>
                 {
                     !canvasData ? (
