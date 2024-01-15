@@ -10,7 +10,7 @@ export default {
         filename: 'bundle.js'
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', '.css']
+        extensions: ['.tsx', '.ts', '.js', '.css', '.png']
     },
     module: {
         rules: [
@@ -21,7 +21,12 @@ export default {
             },
             {
                 test: /\.css$/,
+                exclude: /node_modules/,
                 use: 'css-loader'
+            },
+            {
+                test: /\.png$/,
+                type: 'asset/resource'
             }
         ]
     }

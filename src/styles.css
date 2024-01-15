@@ -155,9 +155,8 @@ canvas{
     border: 2px dotted yellow;
 }
 
-/* for dark mode users - CURRENTLY DISABLED */
+/* for dark mode users */
 
-/*
 @media(prefers-color-scheme: dark){
     body{
         background-color: var(--black);
@@ -175,4 +174,3 @@ canvas{
     }
     
 }
-*/
