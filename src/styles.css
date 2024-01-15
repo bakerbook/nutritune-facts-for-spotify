@@ -146,7 +146,6 @@ h2{
 .playlist img{
     width: 148px;
     height: 148px;
-    border-radius: 5px;
     &:hover{
         cursor: pointer;
     }
@@ -156,7 +155,9 @@ canvas{
     border: 2px dotted yellow;
 }
 
-/* for dark mode users */
+/* for dark mode users - CURRENTLY DISABLED */
+
+/*
 @media(prefers-color-scheme: dark){
     body{
         background-color: var(--black);
@@ -174,3 +175,4 @@ canvas{
     }
     
 }
+*/
