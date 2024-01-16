@@ -8,3 +8,5 @@ A website that shows the user information about their playlists.
 - [x] ~~Add support for playlists with no cover image (aka no songs on them)~~ Not show playlists with no songs on them
 - [ ] Add error checking for pretty much every request
 - [ ] Eventually migrate index.js to TypeScript
+- [ ] Make everything complies with [Spotify's design guidelines](https://developer.spotify.com/documentation/design)
+- [ ] Change the font on the canvas to Inter so it matches the template
