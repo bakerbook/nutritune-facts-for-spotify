@@ -135,16 +135,12 @@ async function getPlaylists(userId, accessToken){
     return playlists
 }
 
-async function getPlaylistDetails(playlistId, accessToken){
-    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-        headers: {
-            "Authorization": `Bearer ${accessToken}`
-        }
-    })
-    const artistData = {}
+async function getData(total, playlistId, accessToken){
+    let artistData = {}
+    let genres = {}
     let totalDurationMilliseconds = 0
-    let data = await response.json()
-    let total = data["tracks"]["total"]
+    let bigGenreList = []
+    let idArray = []
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
         currentSet["items"].forEach(song => {
@@ -159,14 +155,50 @@ async function getPlaylistDetails(playlistId, accessToken){
                 }else{
                     artistData[name]["songNumber"] = artistData[name]["songNumber"] + 1
                 }
+                idArray.push(artist["id"])
             })
         })
     }
+    
+    for(let i = 0; i < idArray.length; i += 50){
+        const chunk = idArray.slice(i, i+50)
+        bigGenreList = bigGenreList.concat(await getArtistGenres(chunk, accessToken))
+    }
+    
+    bigGenreList.forEach(genre => {
+        if(!(genre in genres)){
+            genres[genre] = 1
+        }else{
+            genres[genre] = genres[genre] + 1
+        }
+    })
+
+    return {
+        artistData,
+        totalDurationMilliseconds,
+        genres
+    }
+}
+
+async function getPlaylistDetails(playlistId, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    let data = await response.json()
+    let total = data["tracks"]["total"]
+
+    let { artistData, totalDurationMilliseconds, genres } = await getData(total, playlistId, accessToken)
 
     let top_artist = {
         name: Object.keys(artistData)[0],
         number: Object.values(artistData)[0]["songNumber"],
         id: Object.values(artistData)[0]["id"]
+    }
+    let top_genre = {
+        name: Object.keys(genres)[0],
+        number: Object.values(genres)[0]
     }
     
     for(const [artistName, obj] of Object.entries(artistData)){
@@ -176,18 +208,20 @@ async function getPlaylistDetails(playlistId, accessToken){
             top_artist["id"] = obj["id"]
         }
     }
+    for(const [name, number] of Object.entries(genres)){
+        if(number > top_genre["number"]){
+            top_genre["name"] = name
+            top_genre["number"] = number
+        }
+    }
 
     const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
     const averageSongDurationString = String(averageSongDuration.split(".")[0]) + ":" + String(averageSongDuration.split(".")[1] * 60).substring(0, 2)
 
-    let playlist_icon = null
-
     top_artist["picture"] = await getProfilePicture(top_artist["id"], accessToken)
     delete top_artist["id"]
 
-    try{
-        playlist_icon = data["images"][0]["url"]
-    }catch(err){}
+    const playlist_icon = data["images"][0]["url"]
 
     return {
         "playlist_name": data["name"],
@@ -195,10 +229,25 @@ async function getPlaylistDetails(playlistId, accessToken){
         "playlist_icon": playlist_icon,
         "track_count": total,
         "top_artist": top_artist,
-        "playlist_likes": data["followers"]["total"],
-        "public": data["public"],
+        "top_genre": top_genre,
         "average_song_duration": averageSongDurationString
     }
+}
+
+async function getArtistGenres(idArray, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/artists?ids=${idArray.join(",")}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    let genres = []
+    data["artists"].forEach(artist => {
+        artist["genres"].forEach(genre => {
+            genres.push(genre)
+        })
+    })
+    return genres
 }
 
 async function getProfilePicture(id, accessToken){
