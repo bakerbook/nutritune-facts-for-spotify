@@ -176,7 +176,8 @@ async function getData(total, playlistId, accessToken){
     return {
         artistData,
         totalDurationMilliseconds,
-        genres
+        genres,
+        genreCount: bigGenreList.length
     }
 }
 
@@ -189,7 +190,7 @@ async function getPlaylistDetails(playlistId, accessToken){
     let data = await response.json()
     let total = data["tracks"]["total"]
 
-    let { artistData, totalDurationMilliseconds, genres } = await getData(total, playlistId, accessToken)
+    let { artistData, totalDurationMilliseconds, genres, genreCount } = await getData(total, playlistId, accessToken)
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -230,6 +231,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         "track_count": total,
         "top_artist": top_artist,
         "top_genre": top_genre,
+        "genre_percentage": ((top_genre["number"] / genreCount) * 100).toFixed(1),
         "average_song_duration": averageSongDurationString
     }
 }
