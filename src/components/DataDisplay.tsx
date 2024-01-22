@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import Background from "./../assets/template.png"
+import Font from "./../assets/Inter-SemiBold.ttf"
 
 interface DataDisplayProps{
     durationData: {
@@ -27,15 +28,11 @@ interface DataDisplayProps{
 export default function DataDisplay({ durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
 
     useEffect(() => {
-        /*
         async function loadFont(){
-            const font: FontFace = new FontFace("Inter", "url('./../assets/Inter-ExtraBold.ttf')")
-            await font.load().then(font => {
-                (document.fonts as any).add(font)
-            })
+            const font: FontFace = new FontFace("Inter", `url(${Font})`)
+            await font.load();
+            (document.fonts as any).add(font)
         }
-        loadFont()
-        */
         function loadImage(src: string): Promise<HTMLImageElement>{
             return new Promise((resolve, reject) => {
                 const img = new Image()
@@ -51,20 +48,21 @@ export default function DataDisplay({ durationData, name, topGenre, genrePercent
             loadImage(Background),
             loadImage(icon),
             loadImage(topArtist["picture"]),
+            loadFont()
 
         ]).then(([backgroundImage, playlistIcon, artistIcon]) => {
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
             ctx.drawImage(playlistIcon, 814, 138, 150, 150)
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
-            ctx.font = "72px sans-serif"
+            ctx.font = "72px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
             ctx.fillText(name, 20, 202)
-            ctx.font = "58px sans-serif"
+            ctx.font = "58px Inter, sans-serif"
             ctx.fillText(owner, 104, 266)
-            ctx.font = "104px sans-serif"
+            ctx.font = "104px Inter, sans-serif"
             ctx.fillStyle = "#121212"
             ctx.fillText(String(trackCount), 790, 500)
-            ctx.font = "64px sans-serif"
+            ctx.font = "64px Inter, sans-serif"
             ctx.fillText(topArtist["name"], 168, 748)
             ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
             if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 2){
@@ -89,7 +87,7 @@ export default function DataDisplay({ durationData, name, topGenre, genrePercent
             if((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
                 ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 787, 1183)
             }else{
-                ctx.fillText((durationData["shotrer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1183)
+                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1183)
             }
 
             const dataImage: any = document.getElementById("dataImage")

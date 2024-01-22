@@ -10,7 +10,7 @@ export default {
         filename: 'bundle.js'
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', '.css', '.png']
+        extensions: ['.tsx', '.ts', '.js', '.css', '.png', '.ttf']
     },
     module: {
         rules: [
@@ -26,6 +26,10 @@ export default {
             },
             {
                 test: /\.png$/,
+                type: 'asset/resource'
+            },
+            {
+                test: /\.ttf$/,
                 type: 'asset/resource'
             }
         ]
