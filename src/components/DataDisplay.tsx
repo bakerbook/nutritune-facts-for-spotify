@@ -2,7 +2,12 @@ import { useEffect } from "react"
 import Background from "./../assets/template.png"
 
 interface DataDisplayProps{
-    songDuration: string,
+    durationData: {
+        longer: number,
+        shorter: number,
+        average: number,
+        averageString: string
+    },
     name: string,
     owner: string,
     topArtist: {
@@ -19,7 +24,7 @@ interface DataDisplayProps{
     icon: string
 }
 
-export default function DataDisplay({ songDuration, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
+export default function DataDisplay({ durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
 
     useEffect(() => {
         /*
@@ -62,12 +67,29 @@ export default function DataDisplay({ songDuration, name, topGenre, genrePercent
             ctx.font = "64px sans-serif"
             ctx.fillText(topArtist["name"], 168, 748)
             ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
-            ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 787, 672)
+            if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 2){
+                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 787, 672)
+            }else{
+                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 829, 672)
+            }
             ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962)
             if((genrePercentage.replace(".", "")).length > 2){
                 ctx.fillText(genrePercentage, 787, 890)
             }else{
                 ctx.fillText(genrePercentage, 829, 890)
+            }
+            ctx.fillText(durationData["averageString"], 694, 1035)
+            ctx.fillText(durationData["longer"] + " longer", 102, 1109)
+            ctx.fillText(durationData["shorter"] + " shorter", 102, 1183)
+            if((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
+                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 787, 1109)
+            }else{
+                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1109)
+            }
+            if((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
+                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 787, 1183)
+            }else{
+                ctx.fillText((durationData["shotrer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1183)
             }
 
             const dataImage: any = document.getElementById("dataImage")

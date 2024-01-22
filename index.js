@@ -140,10 +140,12 @@ async function getData(total, playlistId, accessToken){
     let genres = {}
     let totalDurationMilliseconds = 0
     let bigGenreList = []
+    let durationList = []
     let idArray = []
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
         currentSet["items"].forEach(song => {
+            durationList.push(song["track"]["duration_ms"])
             totalDurationMilliseconds += song["track"]["duration_ms"]
             song["track"]["artists"].forEach(artist => {
                 let name = artist["name"]
@@ -173,9 +175,25 @@ async function getData(total, playlistId, accessToken){
         }
     })
 
+    const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
+    const durationData = {
+        longer: 0,
+        shorter: 0,
+        average: averageSongDuration,
+        averageString: null
+    }
+
+    durationList.forEach(len => {
+        if(len > totalDurationMilliseconds / total){
+            durationData["longer"] = durationData["longer"] + 1
+        }else{
+            durationData["shorter"] = durationData["shorter"] + 1
+        }
+    })
+
     return {
         artistData,
-        totalDurationMilliseconds,
+        durationData,
         genres,
         genreCount: bigGenreList.length
     }
@@ -190,7 +208,7 @@ async function getPlaylistDetails(playlistId, accessToken){
     let data = await response.json()
     let total = data["tracks"]["total"]
 
-    let { artistData, totalDurationMilliseconds, genres, genreCount } = await getData(total, playlistId, accessToken)
+    let { artistData, durationData, genres, genreCount } = await getData(total, playlistId, accessToken)
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -216,8 +234,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         }
     }
 
-    const averageSongDuration = ((totalDurationMilliseconds / total) / 60000).toFixed(2)
-    const averageSongDurationString = String(averageSongDuration.split(".")[0]) + ":" + String(averageSongDuration.split(".")[1] * 60).substring(0, 2)
+    durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(durationData["average"].split(".")[1] * 60).substring(0, 2)
 
     top_artist["picture"] = await getProfilePicture(top_artist["id"], accessToken)
     delete top_artist["id"]
@@ -232,7 +249,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         "top_artist": top_artist,
         "top_genre": top_genre,
         "genre_percentage": ((top_genre["number"] / genreCount) * 100).toFixed(1),
-        "average_song_duration": averageSongDurationString
+        "duration_data": durationData
     }
 }
 

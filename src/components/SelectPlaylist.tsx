@@ -29,6 +29,7 @@ export default function SelectPlaylist(){
             body: JSON.stringify({ "access_token": localStorage.getItem("access_token"), "playlist_id": id })
         })
         const data = await response.json()
+        console.log(data)
         await setCanvasData(data)
     }
 
@@ -73,7 +74,7 @@ export default function SelectPlaylist(){
                     !canvasData ? (
                         <p>No playlist data</p>
                     ) : (
-                        <DataDisplay songDuration={canvasData["average_song_duration"]} topGenre={canvasData["top_genre"]} genrePercentage={canvasData["genre_percentage"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
+                        <DataDisplay durationData={canvasData["duration_data"]} topGenre={canvasData["top_genre"]} genrePercentage={canvasData["genre_percentage"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
                     )
                 }
             </div>
