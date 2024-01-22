@@ -1,21 +1,25 @@
 import { useEffect } from "react"
-import Background from "./../assets/nutritune_facts_template.png"
+import Background from "./../assets/template.png"
 
 interface DataDisplayProps{
     songDuration: string,
-    playlistLikes: number,
     name: string,
     owner: string,
-    isPublic: boolean,
     topArtist: {
+        name: string,
+        number: number,
+        picture: string
+    },
+    topGenre: {
         name: string,
         number: number
     },
+    genrePercentage: string,
     trackCount: number,
     icon: string
 }
 
-export default function DataDisplay({ songDuration, playlistLikes, name, owner, isPublic, topArtist, trackCount, icon }: DataDisplayProps){
+export default function DataDisplay({ songDuration, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
 
     useEffect(() => {
         /*
@@ -27,29 +31,54 @@ export default function DataDisplay({ songDuration, playlistLikes, name, owner, 
         }
         loadFont()
         */
+        function loadImage(src: string): Promise<HTMLImageElement>{
+            return new Promise((resolve, reject) => {
+                const img = new Image()
+                img.crossOrigin = "anonymous"
+                img.onload = () => resolve(img)
+                img.onerror = reject
+                img.src = src
+            })
+        }
         const canvas = document.querySelector("canvas")
         const ctx = canvas.getContext("2d")
-        const backgroundImage = new Image()
-        backgroundImage.src = Background
-        backgroundImage.onload = () => {
+        Promise.all([
+            loadImage(Background),
+            loadImage(icon),
+            loadImage(topArtist["picture"]),
+
+        ]).then(([backgroundImage, playlistIcon, artistIcon]) => {
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
-            ctx.font = "36px sans-serif"
+            ctx.drawImage(playlistIcon, 814, 138, 150, 150)
+            ctx.drawImage(artistIcon, 100, 692, 64, 64)
+            ctx.font = "72px sans-serif"
             ctx.fillStyle = "#1DB954"
-            ctx.fillText(name, 10, 101)
-            const playlistIcon = new Image()
-            playlistIcon.src = icon
-            playlistIcon.onload = () => {
-                ctx.drawImage(playlistIcon, 407, 69, 75, 75)
-            }
-            ctx.font = "29px sans-serif"
-            ctx.fillText(owner, 52, 133)
-            ctx.font = "52px sans-serif"
+            ctx.fillText(name, 20, 202)
+            ctx.font = "58px sans-serif"
+            ctx.fillText(owner, 104, 266)
+            ctx.font = "104px sans-serif"
             ctx.fillStyle = "#121212"
-            ctx.fillText(String(trackCount), 395, 250)
-        }
+            ctx.fillText(String(trackCount), 790, 500)
+            ctx.font = "64px sans-serif"
+            ctx.fillText(topArtist["name"], 168, 748)
+            ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
+            ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 787, 672)
+            ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962)
+            if((genrePercentage.replace(".", "")).length > 2){
+                ctx.fillText(genrePercentage, 787, 890)
+            }else{
+                ctx.fillText(genrePercentage, 829, 890)
+            }
+
+            const dataImage: any = document.getElementById("dataImage")
+            dataImage.src = canvas.toDataURL()
+        })
     }, [])
 
     return(
-        <canvas width="491px" height="785px">Canvas is not supported</canvas>
+        <div>
+            <canvas width="982px" height="1498" style={{display: "none"}}>Canvas is not supported</canvas>
+            <img id="dataImage" width="491px" height="749"></img>
+        </div>
     )
 }

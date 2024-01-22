@@ -73,7 +73,7 @@ export default function SelectPlaylist(){
                     !canvasData ? (
                         <p>No playlist data</p>
                     ) : (
-                        <DataDisplay songDuration={canvasData["average_song_duration"]} playlistLikes={canvasData["playlist_likes"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} isPublic={canvasData["public"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
+                        <DataDisplay songDuration={canvasData["average_song_duration"]} topGenre={canvasData["top_genre"]} genrePercentage={canvasData["genre_percentage"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
                     )
                 }
             </div>

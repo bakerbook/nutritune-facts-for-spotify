@@ -10,4 +10,5 @@ A website that shows the user information about their playlists.
 - [ ] Eventually migrate index.js to TypeScript
 - [ ] Make sure everything complies with [Spotify's design guidelines](https://developer.spotify.com/documentation/design)
 - [ ] Change the font on the canvas to Inter so it matches the template
+- [ ] Get all the positioning right on the canvas and make sure there's enough space for all the text
 - [ ] Test the whole genre system
