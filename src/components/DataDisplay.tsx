@@ -3,6 +3,7 @@ import Background from "./../assets/template.png"
 import Font from "./../assets/Inter-SemiBold.ttf"
 
 interface DataDisplayProps{
+    userProfilePicture:string,
     durationData: {
         longer: number,
         shorter: number,
@@ -25,7 +26,7 @@ interface DataDisplayProps{
     icon: string
 }
 
-export default function DataDisplay({ durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
+export default function DataDisplay({ userProfilePicture, durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
 
     useEffect(() => {
         async function loadFont(){
@@ -46,48 +47,53 @@ export default function DataDisplay({ durationData, name, topGenre, genrePercent
         const ctx = canvas.getContext("2d")
         Promise.all([
             loadImage(Background),
+            loadImage(userProfilePicture),
             loadImage(icon),
             loadImage(topArtist["picture"]),
             loadFont()
-
-        ]).then(([backgroundImage, playlistIcon, artistIcon]) => {
+        ]).then(([backgroundImage, profilePicture, playlistIcon, artistIcon]) => {
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
+            ctx.drawImage(profilePicture, 100, 211, 72, 72)
             ctx.drawImage(playlistIcon, 814, 138, 150, 150)
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "72px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
             ctx.fillText(name, 20, 202)
             ctx.font = "58px Inter, sans-serif"
-            ctx.fillText(owner, 104, 266)
+            ctx.fillText(owner, 182, 266)
             ctx.font = "104px Inter, sans-serif"
             ctx.fillStyle = "#121212"
-            ctx.fillText(String(trackCount), 790, 500)
+            if(String(trackCount).length > 2){
+                ctx.fillText(String(trackCount), 764, 485)
+            }else{
+                ctx.fillText(String(trackCount), 833, 485)
+            }
             ctx.font = "64px Inter, sans-serif"
             ctx.fillText(topArtist["name"], 168, 748)
             ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
             if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 2){
-                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 787, 672)
+                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 780, 672)
             }else{
-                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 829, 672)
+                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 820, 672)
             }
             ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962)
             if((genrePercentage.replace(".", "")).length > 2){
-                ctx.fillText(genrePercentage, 787, 890)
+                ctx.fillText(genrePercentage, 780, 890)
             }else{
-                ctx.fillText(genrePercentage, 829, 890)
+                ctx.fillText(genrePercentage, 822, 890)
             }
             ctx.fillText(durationData["averageString"], 694, 1035)
             ctx.fillText(durationData["longer"] + " longer", 102, 1109)
             ctx.fillText(durationData["shorter"] + " shorter", 102, 1183)
             if((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
-                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 787, 1109)
+                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 780, 1109)
             }else{
-                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1109)
+                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 822, 1109)
             }
             if((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
-                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 787, 1183)
+                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 780, 1183)
             }else{
-                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 829, 1183)
+                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 822, 1183)
             }
 
             const dataImage: any = document.getElementById("dataImage")

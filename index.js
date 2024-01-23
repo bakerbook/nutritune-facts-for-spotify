@@ -236,12 +236,15 @@ async function getPlaylistDetails(playlistId, accessToken){
 
     durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(durationData["average"].split(".")[1] * 60).substring(0, 2)
 
-    top_artist["picture"] = await getProfilePicture(top_artist["id"], accessToken)
+    top_artist["picture"] = await getArtistProfilePicture(top_artist["id"], accessToken)
     delete top_artist["id"]
+
+    const userProfilePicture = await getUserProfilePicture(accessToken)
 
     const playlist_icon = data["images"][0]["url"]
 
     return {
+        "user_profile_picture": userProfilePicture,
         "playlist_name": data["name"],
         "playlist_owner": data["owner"]["display_name"],
         "playlist_icon": playlist_icon,
@@ -269,8 +272,17 @@ async function getArtistGenres(idArray, accessToken){
     return genres
 }
 
-async function getProfilePicture(id, accessToken){
+async function getArtistProfilePicture(id, accessToken){
     const response = await fetch(`https://api.spotify.com/v1/artists/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    return data["images"][0]["url"]
+}
+async function getUserProfilePicture(accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/me`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
         }
