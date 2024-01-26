@@ -1,3 +1,4 @@
+import { useState } from "react"
 import SelectPlaylist from "./SelectPlaylist"
 
 function logout(){
@@ -21,8 +22,9 @@ async function getNewToken(){
 }
 
 export default function LoginComponent(){
+    const [accessToken, setAccessToken] = useState(localStorage.getItem("access_token"))
     const urlParams = new URLSearchParams(window.location.search)
-
+    
     if (urlParams.size != 0){
         if(urlParams.get("username")){
             localStorage.setItem("username", urlParams.get("username"))
@@ -38,6 +40,7 @@ export default function LoginComponent(){
                 "token": urlParams.get("access_token"),
                 "expiration": Date.now() + 3600000 //the expiration date is the current time + 60 minutes
             }))
+            setAccessToken(urlParams.get("access_token"))
         }
         document.location.href = document.location.href.split("?")[0];
     }
@@ -50,9 +53,13 @@ export default function LoginComponent(){
             <a href={window.location.href + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
         )
     }else{
-        if(Date.now() > JSON.parse(localStorage.getItem("access_token"))["expiration"]){
+        if(Date.now() > JSON.parse(accessToken)["expiration"]){
             getNewToken().then((code) => {
                 localStorage.setItem("access_token", JSON.stringify({
+                    "token": code,
+                    "expiration": Date.now() + 3600000
+                }))
+                setAccessToken(JSON.stringify({
                     "token": code,
                     "expiration": Date.now() + 3600000
                 }))
