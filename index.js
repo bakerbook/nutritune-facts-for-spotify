@@ -1,8 +1,10 @@
 import express from "express"
 import bodyParser from "body-parser"
+import cookieParser from "cookie-parser"
 import path from "path"
 import * as dotenv from "dotenv"
 import querystring from "node:querystring"
+import crypto from "node:crypto"
 
 dotenv.config()
 
@@ -14,6 +16,9 @@ const __dirname = path.resolve('')
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json())
+app.use(cookieParser())
+
+const scope = "playlist-read-private playlist-read-collaborative"
 
 app.get("/", (req, res) => {
     console.log("User on website.")
@@ -21,22 +26,26 @@ app.get("/", (req, res) => {
 })
 
 app.get("/login", (req, res) => {
-    let scope = "playlist-read-private playlist-read-collaborative"
+    let state = generateRandomString(16)
+    console.log(state)
+    res.cookie("spotify_auth_state", state)
     res.redirect("https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
             client_id: process.env.CLIENT_ID,
             scope: scope,
             redirect_uri: `${process.env.TEST_SITE}/callback`,
+            state: state
         })
     )
 })
 
 app.get("/callback", (req, res) => {
-    let code = req.query.code || null
-    //TODO: implement "state"
-    if(code === null){
-        res.redirect("/?" + querystring.stringify({ error: "no_code_received" }))
+    let code = req["query"]["code"] || null
+    let state = req["query"]["state"] || null
+    let storedState = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
+    if(state === null || state !== storedState){
+        res.redirect("/?" + querystring.stringify({ error: "state_mismatch" }))
     }else{
         const params = new URLSearchParams({
             "client_id": process.env.CLIENT_ID,
@@ -299,4 +308,10 @@ async function getTracks(playlistId, offset, accessToken){
     })
     const data = await response.json()
     return data
+}
+
+function generateRandomString(length){
+    const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    const values = crypto.getRandomValues(new Uint8Array(length))
+    return values.reduce((acc, x) => acc + possible[x % possible.length], "")
 }
