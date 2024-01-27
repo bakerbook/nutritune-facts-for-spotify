@@ -14,14 +14,13 @@ const port = 3000
 
 const __dirname = path.resolve('')
 
-app.use(express.static(__dirname));
+app.use("/dist", express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.json())
 app.use(cookieParser())
 
 const scope = "playlist-read-private playlist-read-collaborative"
 
 app.get("/", (req, res) => {
-    console.log("User on website.")
     res.sendFile(path.join(__dirname, "index.html"))
 })
 

@@ -22,7 +22,7 @@ export default {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: 'css-loader'
+                use: ['style-loader', 'css-loader']
             },
             {
                 test: /\.png$/,
