@@ -18,9 +18,11 @@ export default function SelectPlaylist(){
     const [visible, setVisibility] = useState(false)
     const [playlists, setPlaylists] = useState(false)
     const [canvasData, setCanvasData] = useState(false)
+    const [state, setState] = useState("none")
     let selected = null
 
     async function getPlaylistDetails(id: string){
+        await setState("loading")
         const response = await fetch(document.location.href + "getPlaylistDetails", {
             method: "POST",
             headers: {
@@ -30,6 +32,7 @@ export default function SelectPlaylist(){
         })
         const data = await response.json()
         await setCanvasData(data)
+        await setState("loaded")
     }
 
     useEffect(() => {
@@ -70,10 +73,14 @@ export default function SelectPlaylist(){
             }
             <div>
                 {
-                    !canvasData ? (
-                        <p>No playlist data</p>
-                    ) : (
+                    state === "none" ? (
+                        <h3>Select a playlist</h3>
+                    ) : state === "loading" ? (
+                        <h3 >LOADING...</h3>
+                    ) : state === "loaded" ? (
                         <DataDisplay userProfilePicture={canvasData["user_profile_picture"]} durationData={canvasData["duration_data"]} topGenre={canvasData["top_genre"]} genrePercentage={canvasData["genre_percentage"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
+                    ) : (
+                        <h3 className="error">ERROR</h3>
                     )
                 }
             </div>

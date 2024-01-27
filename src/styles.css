@@ -151,9 +151,16 @@ h2{
     }
 }
 
-canvas{
-    border: 2px dotted yellow;
-    font-family: "Inter", sans-serif;
+#dataImage{
+    outline: solid black 6px;
+}
+
+.error{
+    color: red
+}
+
+h3{
+    font-size: 32px;
 }
 
 /* for dark mode users */
