@@ -27,7 +27,6 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
     let state = generateRandomString(16)
-    console.log(state)
     res.cookie("spotify_auth_state", state)
     res.redirect("https://accounts.spotify.com/authorize?" +
         querystring.stringify({
