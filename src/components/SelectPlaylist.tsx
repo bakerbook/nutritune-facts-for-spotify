@@ -31,6 +31,11 @@ export default function SelectPlaylist(){
             body: JSON.stringify({ "access_token": localStorage.getItem("access_token"), "playlist_id": id })
         })
         const data = await response.json()
+        if(data["error"]){
+            alert(`Error ${data["error"]}`)
+            localStorage.clear()
+            window.location.reload()
+        }
         await setCanvasData(data)
         await setState("loaded")
     }
@@ -38,6 +43,11 @@ export default function SelectPlaylist(){
     useEffect(() => {
         async function getData(){
             let response = await getPlaylists()
+            if(response["error"]){
+                alert(`Error ${response["error"]}`)
+                localStorage.clear()
+                window.location.reload()
+            }
             setPlaylists(response)
         }
         getData()

@@ -2,10 +2,7 @@ import { useState } from "react"
 import SelectPlaylist from "./SelectPlaylist"
 
 function logout(){
-    localStorage.setItem("username", "null")
-    localStorage.setItem("refresh_token", "null")
-    localStorage.setItem("access_token", "null")
-    localStorage.setItem("user_id", "null")
+    localStorage.clear()
     window.location.reload()
 }
 

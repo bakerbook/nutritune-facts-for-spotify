@@ -127,6 +127,9 @@ async function getPlaylists(userId, accessToken){
         }
     })
     const data = await response.json()
+    if(data["error"]){
+        return { "error": data["error"]["status"] }
+    }
     const playlists = []
     data["items"].forEach(playlist => {
         if(playlist["images"].length == 0){
@@ -213,9 +216,11 @@ async function getPlaylistDetails(playlistId, accessToken){
         }
     })
     let data = await response.json()
-    let total = data["tracks"]["total"]
+    if(data["error"]){
+        return { "error": data["error"]["status"] }
+    }
 
-    let { artistData, durationData, genres, genreCount } = await getData(total, playlistId, accessToken)
+    let { artistData, durationData, genres, genreCount } = await getData(data["tracks"]["total"], playlistId, accessToken)
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -255,7 +260,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         "playlist_name": data["name"],
         "playlist_owner": data["owner"]["display_name"],
         "playlist_icon": playlist_icon,
-        "track_count": total,
+        "track_count": data["tracks"]["total"],
         "top_artist": top_artist,
         "top_genre": top_genre,
         "genre_percentage": ((top_genre["number"] / genreCount) * 100).toFixed(1),
