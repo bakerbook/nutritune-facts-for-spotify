@@ -62,7 +62,7 @@ app.get("/callback", (req, res) => {
         }).then(response => response.json()).then(async data => {
             const accessToken = data["access_token"]
             const refreshToken = data["refresh_token"]
-            const { username, user_id } = await getProfileName(accessToken)
+            const { username, user_id } = await getProfileInformation(accessToken)
             res.redirect("/?" + querystring.stringify({
                 refresh_token: refreshToken,
                 access_token: accessToken,
@@ -94,9 +94,12 @@ app.post("/getToken", (req, res) => {
 
 app.post("/getPlaylists", async (req, res) => {
     const userId = req.body["user_id"]
-    const accessToken = JSON.parse(req.body["access_token"])["token"]
-    const playlists = await getPlaylists(userId, accessToken)
-    res.send(JSON.stringify(playlists))
+    if(req["body"]["access_token"] === null){
+        res.send(JSON.stringify({ error: "no_access_token" }))
+    }else{
+        const playlists = await getPlaylists(userId, JSON.parse(req.body["access_token"])["token"])
+        res.send(JSON.stringify(playlists))
+    }
 })
 
 app.post("/getPlaylistDetails", async (req, res) => {
@@ -106,18 +109,30 @@ app.post("/getPlaylistDetails", async (req, res) => {
     res.send(JSON.stringify(data))
 })
 
+/* **CURENTLY UNUSED**
+app.post("/getProfileInformation", async (req, res) => {
+    const accessToken = JSON.parse(req.body["access_token"])["token"]
+    const data = await getProfileInformation(accessToken)
+    res.send(JSON.stringify(data))
+})
+*/
+
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
 })
 
-async function getProfileName(accessToken){
+async function getProfileInformation(accessToken){
     const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
             "Authorization": `Bearer ${accessToken}`
         }
     })
     const data = await response.json()
-    return { username: data["display_name"], user_id: data["id"] }
+    try{
+        return { username: data["display_name"], user_id: data["id"], pfp: data["images"][0]["url"] }
+    }catch{
+        return { username: data["display_name"], user_id: data["id"], pfp: null }
+    }
 }
 
 async function getPlaylists(userId, accessToken){
@@ -251,7 +266,7 @@ async function getPlaylistDetails(playlistId, accessToken){
     top_artist["picture"] = await getArtistProfilePicture(top_artist["id"], accessToken)
     delete top_artist["id"]
 
-    const userProfilePicture = await getUserProfilePicture(accessToken)
+    const userProfilePicture = (await getProfileInformation(accessToken))["pfp"]
 
     const playlist_icon = data["images"][0]["url"]
 
@@ -286,15 +301,6 @@ async function getArtistGenres(idArray, accessToken){
 
 async function getArtistProfilePicture(id, accessToken){
     const response = await fetch(`https://api.spotify.com/v1/artists/${id}`, {
-        headers: {
-            "Authorization": `Bearer ${accessToken}`
-        }
-    })
-    const data = await response.json()
-    return data["images"][0]["url"]
-}
-async function getUserProfilePicture(accessToken){
-    const response = await fetch(`https://api.spotify.com/v1/me`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
         }

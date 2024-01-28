@@ -50,7 +50,13 @@ export default function LoginComponent(){
             <a href={window.location.href + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
         )
     }else{
-        if(Date.now() > JSON.parse(accessToken)["expiration"]){
+        let validAccessToken;
+        try{
+            validAccessToken = (JSON.parse(accessToken)["expiration"]) ? true : false
+        }catch{
+            validAccessToken = false
+        }
+        if(!validAccessToken || Date.now() > JSON.parse(accessToken)["expiration"]){
             getNewToken().then((code) => {
                 localStorage.setItem("access_token", JSON.stringify({
                     "token": code,
