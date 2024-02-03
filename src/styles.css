@@ -15,11 +15,11 @@
 }
 
 .centered{
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
     display: block;
     text-align: center;
-    justify-content: center;
 }
 
 .highlighted{
@@ -97,7 +97,6 @@ h2{
 }
 
 #selectPlaylistBox{
-    outline: solid blue 1px;
     width: 1000px;
     height: auto;
     margin: 16px auto;
@@ -135,7 +134,8 @@ h2{
 #playlistContainer{
     width: auto;
     height: auto;
-    outline: dashed red 1px;
+    padding-bottom: 16px;
+    outline: solid thick var(--green)
 }
 
 .playlist{
@@ -155,12 +155,52 @@ h2{
     outline: solid black 6px;
 }
 
+#navBar{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+#navBar li {
+    float: left;
+}
+#navBar li a {
+    background-color: #535353;
+    border-radius: 12px;
+    display: block;
+    font-size: 28px;
+    color: white;
+    text-align: center;
+    padding: 14px 28px;
+    margin: 10px;
+    text-decoration: none;
+    &:hover{
+        background-color: #212121;
+    }
+}
+
 .error{
     color: red
 }
 
 h3{
     font-size: 32px;
+}
+
+.mainContent{
+    margin-bottom: 128px;
+}
+
+.infoContainer h3{
+    text-decoration: underline;
+}
+.infoContainer p {
+    max-width: 65%;
+}
+.selectButtonHiglihghted{
+    outline-style: solid;
+    outline-width: thick;
+    outline-color: var(--green)
 }
 
 /* for dark mode users */
@@ -175,10 +215,12 @@ h3{
     }
     #selectPlaylistButton{
         background-color: var(--white);
-        color: var(--black)
+        color: var(--black);
     }
     .highlighted{
         outline-color: white
     }
-    
+    #dataImage{
+        outline: transparent
+    }
 }

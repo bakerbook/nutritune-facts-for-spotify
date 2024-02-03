@@ -3,7 +3,7 @@ import PlaylistList from "./PlaylistList"
 import DataDisplay from "./DataDisplay"
 
 async function getPlaylists(){
-    const response = await fetch(document.location.href + "getPlaylists", {
+    const response = await fetch(window.location.href.split("#")[0] + "getPlaylists", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -23,7 +23,7 @@ export default function SelectPlaylist(){
 
     async function getPlaylistDetails(id: string){
         await setState("loading")
-        const response = await fetch(document.location.href + "getPlaylistDetails", {
+        const response = await fetch(window.location.href.split("#")[0] + "getPlaylistDetails", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

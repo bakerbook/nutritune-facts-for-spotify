@@ -7,7 +7,7 @@ function logout(){
 }
 
 async function getNewToken(){
-    const response = await fetch(document.location.href + "getToken", {
+    const response = await fetch(window.location.href.split("#")[0] + "getToken", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -39,7 +39,7 @@ export default function LoginComponent(){
             }))
             setAccessToken(urlParams.get("access_token"))
         }
-        document.location.href = document.location.href.split("?")[0];
+        window.location.href = window.location.href.split("?")[0];
     }
 
     const username = localStorage.getItem("username") || "null"
@@ -47,7 +47,9 @@ export default function LoginComponent(){
 
     if(refreshToken == "null" || username == "null"){
         return(
-            <a href={window.location.href + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
+            <div className="mainContent">
+                <a href={window.location.href.split("#")[0] + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
+            </div>
         )
     }else{
         let validAccessToken;
@@ -68,7 +70,7 @@ export default function LoginComponent(){
                 }))
             }).then(() => {
                 return(
-                    <div>
+                    <div className="mainContent">
                         <h2>Logged in as {username}</h2>
                         <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
                         <SelectPlaylist />
@@ -77,7 +79,7 @@ export default function LoginComponent(){
             })
         }else{
             return(
-                <div>
+                <div className="mainContent">
                     <h2>Logged in as {username}</h2>
                     <button className="redButton hoverAnimation" onClick={logout}>Log out</button>
                     <SelectPlaylist />
