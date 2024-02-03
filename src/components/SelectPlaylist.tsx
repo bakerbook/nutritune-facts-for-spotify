@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import PlaylistList from "./PlaylistList"
 import DataDisplay from "./DataDisplay"
+import Loading from "./Loading"
 
 async function getPlaylists(){
     const response = await fetch(window.location.href.split("#")[0] + "getPlaylists", {
@@ -86,7 +87,7 @@ export default function SelectPlaylist(){
                     state === "none" ? (
                         <h3>Select a playlist</h3>
                     ) : state === "loading" ? (
-                        <h3 >LOADING...</h3>
+                        <Loading />
                     ) : state === "loaded" ? (
                         <DataDisplay userProfilePicture={canvasData["user_profile_picture"]} durationData={canvasData["duration_data"]} topGenre={canvasData["top_genre"]} genrePercentage={canvasData["genre_percentage"]} name={canvasData["playlist_name"]} owner={canvasData["playlist_owner"]} topArtist={canvasData["top_artist"]} trackCount={canvasData["track_count"]} icon={canvasData["playlist_icon"]} />
                     ) : (
