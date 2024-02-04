@@ -103,7 +103,7 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
 
     return(
         <div>
-            <canvas width="982px" height="1498" style={{display: "none"}}>Canvas is not supported</canvas>
+            <canvas width="982px" height="1498px">Canvas is not supported</canvas>
             <img id="dataImage" width="491px" height="749"></img>
         </div>
     )

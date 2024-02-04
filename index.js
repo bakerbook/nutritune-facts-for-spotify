@@ -21,12 +21,14 @@ app.use(cookieParser())
 const scope = "playlist-read-private playlist-read-collaborative"
 
 app.get("/", (req, res) => {
+    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
     res.sendFile(path.join(__dirname, "index.html"))
 })
 
 app.get("/login", (req, res) => {
     let state = generateRandomString(16)
     res.cookie("spotify_auth_state", state)
+    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
     res.redirect("https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
@@ -42,6 +44,7 @@ app.get("/callback", (req, res) => {
     let code = req["query"]["code"] || null
     let state = req["query"]["state"] || null
     let storedState = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
+    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
     if(state === null || state !== storedState){
         res.redirect("/?" + querystring.stringify({ error: "state_mismatch" }))
     }else{
@@ -62,7 +65,11 @@ app.get("/callback", (req, res) => {
         }).then(response => response.json()).then(async data => {
             const accessToken = data["access_token"]
             const refreshToken = data["refresh_token"]
-            const { username, user_id } = await getProfileInformation(accessToken)
+            let profileRequest = await getProfileInformation(accessToken)
+            if(profileRequest["error"]){
+                res.redirect("/")
+            }
+            const { username, user_id } = profileRequest
             res.redirect("/?" + querystring.stringify({
                 refresh_token: refreshToken,
                 access_token: accessToken,
@@ -128,6 +135,13 @@ async function getProfileInformation(accessToken){
         }
     })
     const data = await response.json()
+    if(data["error"]){
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
+    }
     try{
         return { username: data["display_name"], user_id: data["id"], pfp: data["images"][0]["url"] }
     }catch{
@@ -143,7 +157,11 @@ async function getPlaylists(userId, accessToken){
     })
     const data = await response.json()
     if(data["error"]){
-        return { "error": data["error"]["status"] }
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
     }
     const playlists = []
     data["items"].forEach(playlist => {
@@ -169,6 +187,9 @@ async function getData(total, playlistId, accessToken){
     let idArray = []
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
+        if(currentSet["error"]){
+            return currentSet
+        }
         currentSet["items"].forEach(song => {
             durationList.push(song["track"]["duration_ms"])
             totalDurationMilliseconds += song["track"]["duration_ms"]
@@ -189,7 +210,11 @@ async function getData(total, playlistId, accessToken){
     
     for(let i = 0; i < idArray.length; i += 50){
         const chunk = idArray.slice(i, i+50)
-        bigGenreList = bigGenreList.concat(await getArtistGenres(chunk, accessToken))
+        let data = await getArtistGenres(chunk, accessToken)
+        if(data["error"]){
+            return data
+        }
+        bigGenreList = bigGenreList.concat(data)
     }
     
     bigGenreList.forEach(genre => {
@@ -232,10 +257,21 @@ async function getPlaylistDetails(playlistId, accessToken){
     })
     let data = await response.json()
     if(data["error"]){
-        return { "error": data["error"]["status"] }
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
     }
 
-    let { artistData, durationData, genres, genreCount } = await getData(data["tracks"]["total"], playlistId, accessToken)
+    let infoRequest = await getData(data["tracks"]["total"], playlistId, accessToken)
+
+    if(infoRequest["error"]){
+        return infoRequest
+    }
+
+    let { artistData, durationData, genres, genreCount } = infoRequest
+
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -263,10 +299,18 @@ async function getPlaylistDetails(playlistId, accessToken){
 
     durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(durationData["average"].split(".")[1] * 60).substring(0, 2)
 
+    let topArtistPictureRequest = await getArtistProfilePicture(top_artist["id"], accessToken)
+    if(topArtistPictureRequest["error"]){
+        return topArtistPictureRequest
+    }
     top_artist["picture"] = await getArtistProfilePicture(top_artist["id"], accessToken)
     delete top_artist["id"]
 
-    const userProfilePicture = (await getProfileInformation(accessToken))["pfp"]
+    let userProfilePictureRequest = await getProfileInformation(accessToken)
+    if(userProfilePictureRequest["error"]){
+        return userProfilePictureRequest
+    }
+    const userProfilePicture = userProfilePictureRequest["pfp"]
 
     const playlist_icon = data["images"][0]["url"]
 
@@ -290,6 +334,13 @@ async function getArtistGenres(idArray, accessToken){
         }
     })
     const data = await response.json()
+    if(data["error"]){
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
+    }
     let genres = []
     data["artists"].forEach(artist => {
         artist["genres"].forEach(genre => {
@@ -306,6 +357,13 @@ async function getArtistProfilePicture(id, accessToken){
         }
     })
     const data = await response.json()
+    if(data["error"]){
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
+    }
     return data["images"][0]["url"]
 }
 
@@ -316,6 +374,13 @@ async function getTracks(playlistId, offset, accessToken){
         }
     })
     const data = await response.json()
+    if(data["error"]){
+        if(data["error"]["status"] === 429){
+            return { error: "Too many requests" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
+    }
     return data
 }
 

@@ -203,6 +203,10 @@ h3{
     outline-color: var(--green)
 }
 
+canvas{
+    display: none
+}
+
 /* for dark mode users */
 
 @media(prefers-color-scheme: dark){

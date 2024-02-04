@@ -1,4 +1,5 @@
 import path from 'path'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 
 const __dirname = path.resolve('')
 
@@ -12,6 +13,9 @@ export default {
     resolve: {
         extensions: ['.tsx', '.ts', '.js', '.css', '.png', '.ttf']
     },
+
+    plugins: [new MiniCssExtractPlugin()],
+
     module: {
         rules: [
             {
@@ -22,7 +26,7 @@ export default {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: ['style-loader', 'css-loader']
+                use: [MiniCssExtractPlugin.loader, 'css-loader']
             },
             {
                 test: /\.png$/,
