@@ -28,7 +28,6 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
     let state = generateRandomString(16)
     res.cookie("spotify_auth_state", state)
-    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
     res.redirect("https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
@@ -44,7 +43,6 @@ app.get("/callback", (req, res) => {
     let code = req["query"]["code"] || null
     let state = req["query"]["state"] || null
     let storedState = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
-    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
     if(state === null || state !== storedState){
         res.redirect("/?" + querystring.stringify({ error: "state_mismatch" }))
     }else{
@@ -137,7 +135,7 @@ async function getProfileInformation(accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
@@ -158,7 +156,7 @@ async function getPlaylists(userId, accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
@@ -258,7 +256,7 @@ async function getPlaylistDetails(playlistId, accessToken){
     let data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
@@ -336,7 +334,7 @@ async function getArtistGenres(idArray, accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
@@ -359,7 +357,7 @@ async function getArtistProfilePicture(id, accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
@@ -376,7 +374,7 @@ async function getTracks(playlistId, offset, accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "Too many requests" }
+            return { error: "too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }

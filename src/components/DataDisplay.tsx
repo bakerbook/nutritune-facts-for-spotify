@@ -36,6 +36,10 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
         }
         function loadImage(src: string): Promise<HTMLImageElement>{
             return new Promise((resolve, reject) => {
+                if(src === null){
+                    resolve(null)
+                    return
+                }
                 const img = new Image()
                 img.crossOrigin = "anonymous"
                 img.onload = () => resolve(img)
@@ -53,32 +57,40 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             loadFont()
         ]).then(([backgroundImage, profilePicture, playlistIcon, artistIcon]) => {
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
-            ctx.drawImage(profilePicture, 100, 211, 72, 72)
             ctx.drawImage(playlistIcon, 814, 138, 150, 150)
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "72px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
             ctx.fillText(name, 20, 202)
             ctx.font = "58px Inter, sans-serif"
-            ctx.fillText(owner, 182, 266)
+            if(profilePicture){
+                ctx.drawImage(profilePicture, 100, 211, 72, 72)
+                ctx.fillText(owner, 182, 266)
+            }else{
+                ctx.fillText(owner, 100, 266)
+            }
             ctx.font = "104px Inter, sans-serif"
             ctx.fillStyle = "#121212"
-            if(String(trackCount).length > 2){
-                ctx.fillText(String(trackCount), 764, 485)
-            }else{
-                ctx.fillText(String(trackCount), 833, 485)
-            }
+            ctx.fillText(String(trackCount), 833 - ((String(trackCount).length - 2) * 69), 485)
             ctx.font = "64px Inter, sans-serif"
             ctx.fillText(topArtist["name"], 168, 748)
             ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
             if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 2){
-                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 780, 672)
+                if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 3){
+                    ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 740, 672)
+                }else{
+                    ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 780, 672)
+                }
             }else{
                 ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 820, 672)
             }
             ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962)
             if((genrePercentage.replace(".", "")).length > 2){
-                ctx.fillText(genrePercentage, 780, 890)
+                if((genrePercentage.replace(".", "")).length > 3){
+                    ctx.fillText(genrePercentage, 738, 890)
+                }else{
+                    ctx.fillText(genrePercentage, 780, 890)
+                }
             }else{
                 ctx.fillText(genrePercentage, 822, 890)
             }

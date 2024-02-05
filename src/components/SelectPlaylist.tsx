@@ -33,7 +33,7 @@ export default function SelectPlaylist(){
         })
         const data = await response.json()
         if(data["error"]){
-            alert(`Error ${data["error"]}`)
+            alert(`Error: ${data["error"]}`)
             localStorage.clear()
             window.location.reload()
         }
@@ -45,7 +45,7 @@ export default function SelectPlaylist(){
         async function getData(){
             let response = await getPlaylists()
             if(response["error"]){
-                alert(`Error ${response["error"]}`)
+                alert(`Error: ${response["error"]}`)
                 localStorage.clear()
                 window.location.reload()
             }
