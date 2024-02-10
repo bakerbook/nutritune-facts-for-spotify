@@ -3,16 +3,18 @@ import SelectPlaylist from "./SelectPlaylist"
 
 function logout(){
     localStorage.clear()
+    document.cookie.split(";").forEach(item => {
+        document.cookie = item.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC"
+    })
     window.location.reload()
 }
 
 async function getNewToken(){
     const response = await fetch(window.location.href.split("#")[0] + "getToken", {
-        method: "POST",
+        method: "GET",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ "refresh_token": localStorage.getItem("refresh_token") })
     })
     const data = await response.json()
     return data["access_token"]
@@ -27,7 +29,7 @@ export default function LoginComponent(){
             localStorage.setItem("username", urlParams.get("username"))
         }
         if(urlParams.get("refresh_token")){
-            localStorage.setItem("refresh_token", urlParams.get("refresh_token"))
+            document.cookie = `refresh_token=${urlParams.get("refresh_token")}; expires=${new Date(new Date().setMonth(new Date().getMonth() + 1)).toUTCString()}; Secure`
         }
         if(urlParams.get("user_id")){
             localStorage.setItem("user_id", urlParams.get("user_id"))
@@ -43,9 +45,9 @@ export default function LoginComponent(){
     }
 
     const username = localStorage.getItem("username") || "null"
-    const refreshToken = localStorage.getItem("refresh_token") || "null"
+    const refreshTokenExists = document.cookie.split(";").some((item) => item.trim().startsWith("refresh_token=")) || "null"
 
-    if(refreshToken == "null" || username == "null"){
+    if(refreshTokenExists == "null" || username == "null"){
         return(
             <div className="mainContent">
                 <a href={window.location.href.split("#")[0] + "login"} className="centered button hoverAnimation">Log in with Spotify</a>

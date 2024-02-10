@@ -78,8 +78,12 @@ app.get("/callback", (req, res) => {
     }
 })
 
-app.post("/getToken", (req, res) => {
-    const refreshToken = req.body["refresh_token"]
+app.get("/getToken", (req, res) => {
+    const refreshToken = req["cookies"] ? req["cookies"]["refresh_tokem"] : null
+    if(!refreshToken){
+        res.send(JSON.stringify({ error: "Invalid refresh token" }))
+        return
+    }
     const params = new URLSearchParams({
         "grant_type": "refresh_token",
         "refresh_token": refreshToken,
@@ -93,7 +97,7 @@ app.post("/getToken", (req, res) => {
         },
         body: params
     }).then(response => response.json()).then(data => {
-        res.send({ "access_token": data["access_token"] })
+        res.send(JSON.stringify({ "access_token": data["access_token"] }))
     })
 })
 
