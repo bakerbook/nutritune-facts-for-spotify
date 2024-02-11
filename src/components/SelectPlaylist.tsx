@@ -4,7 +4,7 @@ import DataDisplay from "./DataDisplay"
 import Loading from "./Loading"
 
 async function getPlaylists(){
-    const response = await fetch(window.location.href.split("#")[0] + "getPlaylists", {
+    const response = await fetch(window.location.href.split("#")[0] + "api/getPlaylists", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -24,7 +24,7 @@ export default function SelectPlaylist(){
 
     async function getPlaylistDetails(id: string){
         await setState("loading")
-        const response = await fetch(window.location.href.split("#")[0] + "getPlaylistDetails", {
+        const response = await fetch(window.location.href.split("#")[0] + "api/getPlaylistDetails", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

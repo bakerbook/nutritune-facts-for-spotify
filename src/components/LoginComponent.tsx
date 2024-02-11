@@ -10,7 +10,7 @@ function logout(){
 }
 
 async function getNewToken(){
-    const response = await fetch(window.location.href.split("#")[0] + "getToken", {
+    const response = await fetch(window.location.href.split("#")[0] + "api/getToken", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

@@ -78,8 +78,8 @@ app.get("/callback", (req, res) => {
     }
 })
 
-app.get("/getToken", (req, res) => {
-    const refreshToken = req["cookies"] ? req["cookies"]["refresh_tokem"] : null
+app.get("/api/getToken", (req, res) => {
+    const refreshToken = req["cookies"] ? req["cookies"]["refresh_token"] : null
     if(!refreshToken){
         res.send(JSON.stringify({ error: "Invalid refresh token" }))
         return
@@ -101,7 +101,7 @@ app.get("/getToken", (req, res) => {
     })
 })
 
-app.post("/getPlaylists", async (req, res) => {
+app.post("/api/getPlaylists", async (req, res) => {
     const userId = req.body["user_id"]
     if(req["body"]["access_token"] === null){
         res.send(JSON.stringify({ error: "no_access_token" }))
@@ -111,20 +111,12 @@ app.post("/getPlaylists", async (req, res) => {
     }
 })
 
-app.post("/getPlaylistDetails", async (req, res) => {
+app.post("/api/getPlaylistDetails", async (req, res) => {
     const playlistId = req.body["playlist_id"]
     const accessToken = JSON.parse(req.body["access_token"])["token"]
     const data = await getPlaylistDetails(playlistId, accessToken)
     res.send(JSON.stringify(data))
 })
-
-/* **CURENTLY UNUSED**
-app.post("/getProfileInformation", async (req, res) => {
-    const accessToken = JSON.parse(req.body["access_token"])["token"]
-    const data = await getProfileInformation(accessToken)
-    res.send(JSON.stringify(data))
-})
-*/
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`)
