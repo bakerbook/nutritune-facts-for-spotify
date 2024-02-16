@@ -15,7 +15,6 @@
 }
 
 .centered{
-    width: 100%;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -23,7 +22,7 @@
 }
 
 .highlighted{
-    outline-width: thick;
+    outline-width: 10%;
     outline-style: solid;
     outline-color: black
 }
@@ -34,7 +33,7 @@ body {
 }
 
 div{
-    margin: 16px;
+    margin: 2vw;
 }
 
 h1 {
@@ -47,7 +46,9 @@ p {
 }
 
 ul{
-    margin-bottom: 4;
+    margin-bottom: 4px;
+    padding: 0;
+    display: inline-block;
 }
 
 a.button{
@@ -97,19 +98,21 @@ h2{
 }
 
 #selectPlaylistBox{
-    width: 1000px;
+    width: 40vw;
     height: auto;
     margin: 16px auto;
-    justify-content: center;
 }
 #selectPlaylistBox div button{
     background-color: var(--green);
     border-style: none;
-    border-radius: 32px;
+    border-radius: 5vw;
     width: 36%;
     height: 64px;
     color: var(--white);
-    font-size: 32px;
+    text-align: center;
+    white-space: normal;
+    overflow: visible;
+    font-size: 1vw;
     font-weight: bold;
     &:hover{
         background-color: #199e48
@@ -123,7 +126,7 @@ h2{
     font-weight: 900;
     border-style: none;
     border-radius: 8px;
-    width: 256px;
+    width: 16vw;
     height: 72px;
     margin: 16px auto;
     &:hover{
@@ -135,17 +138,21 @@ h2{
     width: auto;
     height: auto;
     padding-bottom: 16px;
-    outline: solid thick var(--green)
+    outline: solid 0.25vw var(--green)
 }
 
 .playlist{
     display: inline-block;
+    max-width: 100%;
+    overflow: visible;
+    margin: 2vw;
+    padding: 0;
     vertical-align: top
 }
 
 .playlist img{
-    width: 148px;
-    height: 148px;
+    width: 6vw;
+    height: 6vw;
     &:hover{
         cursor: pointer;
     }
@@ -155,40 +162,12 @@ h2{
     outline: solid black 6px;
 }
 
-#navBar{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-#navBar li {
-    float: left;
-}
-#navBar li a {
-    background-color: #535353;
-    border-radius: 12px;
-    display: block;
-    font-size: 28px;
-    color: white;
-    text-align: center;
-    padding: 14px 28px;
-    margin: 10px;
-    text-decoration: none;
-    &:hover{
-        background-color: #212121;
-    }
-}
-
-.error{
-    color: red
-}
-
 h3{
     font-size: 32px;
 }
 
 .mainContent{
-    margin-bottom: 128px;
+    margin-bottom: 4vh;
 }
 
 .infoContainer h3{
@@ -203,9 +182,28 @@ h3{
     outline-color: var(--green)
 }
 
+#dataImage{
+    max-width: 491px;
+    max-height: 749px;
+    width: 100%;
+    height: 100%;
+}
+
 canvas{
     display: none
 }
+
+@media(max-width: 670px){
+    #selectPlaylistButton{
+        font-size: 3vw
+    }
+}
+@media(max-width: 1020px){
+    #selectPlaylistBox div button{
+        font-size: 2vw
+    }
+}
+
 
 /* for dark mode users */
 
