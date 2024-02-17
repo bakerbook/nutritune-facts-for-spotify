@@ -1,10 +1,15 @@
 import path from 'path'
+import * as dotenv from "dotenv"
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+
+dotenv.config()
 
 const __dirname = path.resolve('')
 
 export default {
     entry: './src/main.tsx',
+
+    mode: process.env.WEBPACK_MODE,
 
     output: {
         path: path.join(__dirname, '/dist'),
