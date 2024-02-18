@@ -1,4 +1,4 @@
-# spotify-playlist-info
+# Nutritune Facts for Spotify
 A website that shows the user information about their playlists.
 
 ### To-do list
