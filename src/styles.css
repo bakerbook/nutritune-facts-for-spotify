@@ -9,6 +9,7 @@
     text-align: center;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    justify-content: center;
     &::-webkit-scrollbar{
         display: none
     }
@@ -69,6 +70,23 @@ a.button{
     &:hover{
         background-color: #199e48
     }
+}
+#downloadButton{
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    text-decoration: none;
+    width: auto;
+    height: auto;
+    background-color: var(--black);
+    color: var(--white);
+    user-select: none;
+    font-size: 100%;
+    margin-top: 12px;
+    font-weight: bolder;
+    align-items: center;
+    padding: 8px;
+    border-radius: 16px;
 }
 
 h2{
@@ -174,7 +192,7 @@ h3{
     text-decoration: underline;
 }
 .infoContainer p {
-    max-width: 65%;
+    max-width: 30%;
 }
 .selectButtonHiglihghted{
     outline-style: solid;
@@ -224,5 +242,9 @@ canvas{
     }
     #dataImage{
         outline: transparent
+    }
+    #downloadButton{
+        background-color: var(--white);
+        color: var(--black);
     }
 }

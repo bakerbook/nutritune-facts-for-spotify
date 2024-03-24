@@ -1,5 +1,5 @@
 export default function Header(){
     return(
-        <h1 className="centered">Nutritune Facts for Spotify</h1>
+        <h1 className="centered">NutriTune Facts for Spotify</h1>
     )
 }

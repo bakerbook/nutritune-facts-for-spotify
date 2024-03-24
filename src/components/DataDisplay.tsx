@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import Background from "./../assets/template.png"
 import Font from "./../assets/Inter-SemiBold.ttf"
 
@@ -27,6 +27,7 @@ interface DataDisplayProps{
 }
 
 export default function DataDisplay({ userProfilePicture, durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
+    const [imgSource, setImgSource] = useState(null)
 
     useEffect(() => {
         async function loadFont(){
@@ -61,7 +62,7 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "72px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
-            ctx.fillText(name, 20, 202)
+            ctx.fillText(name, 20, 194)
             ctx.font = "58px Inter, sans-serif"
             if(profilePicture){
                 ctx.drawImage(profilePicture, 100, 211, 72, 72)
@@ -108,15 +109,32 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
                 ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 822, 1183)
             }
 
-            const dataImage: any = document.getElementById("dataImage")
-            dataImage.src = canvas.toDataURL()
+            setImgSource(canvas.toDataURL())
         })
     }, [])
+
+    function saveImage(){
+        let link = document.createElement("a")
+        link.href = imgSource
+        link.download = "image.png"
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
 
     return(
         <>
             <canvas width="982px" height="1498px">Canvas is not supported</canvas>
-            <img id="dataImage" className="centered"></img>
+            {
+                imgSource ? (
+                    <>
+                        <img id="dataImage" className="centered" src={imgSource}></img>
+                        <a id="downloadButton" className="hoverAnimation" download="image.png" href={imgSource}>Download image</a>
+                    </>
+                ) : (
+                    null
+                )
+            }
         </>
     )
 }
