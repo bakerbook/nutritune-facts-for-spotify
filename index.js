@@ -160,7 +160,7 @@ async function getPlaylists(userId, accessToken){
     }
     const playlists = []
     data["items"].forEach(playlist => {
-        if(playlist["images"].length == 0){
+        if(!playlist["images"].length){
             return
         }
         let cover = playlist["images"][0]["url"]
