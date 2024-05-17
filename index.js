@@ -102,6 +102,7 @@ app.get("/api/getToken", (req, res) => {
 })
 
 app.post("/api/getPlaylists", async (req, res) => {
+    console.log(req)
     const userId = req.body["user_id"]
     if(req["body"]["access_token"] === null){
         res.send(JSON.stringify({ error: "no_access_token" }))
@@ -119,7 +120,7 @@ app.post("/api/getPlaylistDetails", async (req, res) => {
 })
 
 app.listen(process.env.PORT || port, () => {
-    console.log(`App listening on port ${process.env.PORT || port}`)
+    console.log(`App listening on port ${process.env.PORT || port}!`)
 })
 
 async function getProfileInformation(accessToken){
