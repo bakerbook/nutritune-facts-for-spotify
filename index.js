@@ -21,7 +21,7 @@ app.use(cookieParser())
 const scope = "playlist-read-private playlist-read-collaborative"
 
 app.get("/", (req, res) => {
-    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com")
+    res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com platform-lookaside.fbsbx.com")
     res.sendFile(path.join(__dirname, "index.html"))
 })
 
@@ -297,14 +297,14 @@ async function getPlaylistDetails(playlistId, accessToken){
     if(topArtistPictureRequest["error"]){
         return topArtistPictureRequest
     }
-    top_artist["picture"] = await getArtistProfilePicture(top_artist["id"], accessToken)
+    top_artist["picture"] = topArtistPictureRequest
     delete top_artist["id"]
 
-    let userProfilePictureRequest = await getProfileInformation(accessToken)
+    let userProfilePictureRequest = await getUserProfilePicture(data["owner"]["id"], accessToken)
     if(userProfilePictureRequest["error"]){
         return userProfilePictureRequest
     }
-    const userProfilePicture = userProfilePictureRequest["pfp"]
+    const userProfilePicture = userProfilePictureRequest
 
     const playlist_icon = data["images"][0]["url"]
 
@@ -376,6 +376,27 @@ async function getTracks(playlistId, offset, accessToken){
         }
     }
     return data
+}
+
+async function getUserProfilePicture(id, accessToken){
+    const response = await fetch(`https://api.spotify.com/v1/users/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    })
+    const data = await response.json()
+    if(data["error"]){
+        if(data["error"]["status"] === 429){
+            return { error: "too many requests, try again later" }
+        }else{
+            return { error: "400 Bad Request"}
+        }
+    }
+    try{
+        return data["images"][0]["url"]
+    }catch{
+        return null
+    }
 }
 
 function generateRandomString(length){
