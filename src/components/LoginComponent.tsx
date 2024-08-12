@@ -10,7 +10,7 @@ function logout(){
 }
 
 async function getNewToken(){
-    const response = await fetch(window.location.href.split("#")[0] + "api/getToken", {
+    const response = await fetch("api/getToken", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -50,7 +50,7 @@ export default function LoginComponent(){
     if(refreshTokenExists == "null" || username == "null"){
         return(
             <div className="mainContent">
-                <a href={window.location.href.split("#")[0] + "login"} className="centered button hoverAnimation">Log in with Spotify</a>
+                <a href={"login"} className="centered button hoverAnimation">Log in with Spotify</a>
             </div>
         )
     }else{
