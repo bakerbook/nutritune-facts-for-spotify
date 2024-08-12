@@ -3,7 +3,7 @@ NutriTune Facts For Spotify is a web app designed to allow a user to sign in wit
 
 ## Steps to use
 
-* 1: Get a your Spotify client ID and client secret at the [Spotify for Developers](https://developer.spotify.com/) website and put it in a `.env` file
+* 1: Get your Spotify client ID and client secret at the [Spotify for Developers](https://developer.spotify.com/) website and put it in a `.env` file
 
 * 2: Set the `TEST_SITE` environment variable to the url you are using (most likely http://localhost:3000 in this case)
 
