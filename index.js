@@ -185,20 +185,22 @@ async function getData(total, playlistId, accessToken){
             return currentSet
         }
         currentSet["items"].forEach(song => {
-            durationList.push(song["track"]["duration_ms"])
-            totalDurationMilliseconds += song["track"]["duration_ms"]
-            song["track"]["artists"].forEach(artist => {
-                let name = artist["name"]
-                if(!(name in artistData)){
-                    artistData[name] = {
-                        songNumber: 1,
-                        id: artist["href"].split("artists/")[1]
+            if(song["track"]){
+                durationList.push(song["track"]["duration_ms"])
+                totalDurationMilliseconds += song["track"]["duration_ms"]
+                song["track"]["artists"].forEach(artist => {
+                    let name = artist["name"]
+                    if(!(name in artistData)){
+                        artistData[name] = {
+                            songNumber: 1,
+                            id: artist["href"].split("artists/")[1]
+                        }
+                    }else{
+                        artistData[name]["songNumber"] = artistData[name]["songNumber"] + 1
                     }
-                }else{
-                    artistData[name]["songNumber"] = artistData[name]["songNumber"] + 1
-                }
-                idArray.push(artist["id"])
-            })
+                    idArray.push(artist["id"])
+                })
+            }
         })
     }
     
@@ -266,7 +268,6 @@ async function getPlaylistDetails(playlistId, accessToken){
 
     let { artistData, durationData, genres, genreCount } = infoRequest
 
-
     let top_artist = {
         name: Object.keys(artistData)[0],
         number: Object.values(artistData)[0]["songNumber"],
@@ -330,16 +331,18 @@ async function getArtistGenres(idArray, accessToken){
     const data = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
-            return { error: "too many requests, try again later" }
+            return { error: "Too many requests, try again later" }
         }else{
             return { error: "400 Bad Request"}
         }
     }
     let genres = []
     data["artists"].forEach(artist => {
-        artist["genres"].forEach(genre => {
-            genres.push(genre)
-        })
+        try{
+            artist["genres"].forEach(genre => {
+                genres.push(genre)
+            })
+        }catch{} // Should probably change this later
     })
     return genres
 }
