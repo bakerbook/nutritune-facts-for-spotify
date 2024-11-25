@@ -6,8 +6,6 @@ import * as dotenv from "dotenv"
 import querystring from "node:querystring"
 import crypto from "node:crypto"
 
-console.log(1)
-
 dotenv.config()
 
 const app = express()
@@ -344,10 +342,10 @@ async function getArtistGenres(idArray, accessToken){
     let genres = []
     data["artists"].forEach(artist => {
         try{
-            artist["genres"].forEach(genre => {
-                genres.push(genre)
-            })
-        }catch{} // Should probably change this later
+            if(artist["genres"][0]){ // Add every artist's first genre to the total list (if they have any)
+                genres.push(artist["genres"][0])
+            }
+        }catch(err){console.log(err)} // Check for errors (haven't encountered any situations where errors have appeared yet though)
     })
     return genres
 }
