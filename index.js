@@ -159,7 +159,10 @@ async function getPlaylists(userId, accessToken){
     }
     const playlists = []
     data["items"].forEach(playlist => {
-        if(!playlist["images"]){
+        if(playlist["tracks"]["total"] == 0){ // Don't show user playlist if it's empty
+            return
+        }
+        if(!playlist["images"]){ // Don't show playlist if it has no cover image
             return
         }
         let cover = playlist["images"][0]["url"]
