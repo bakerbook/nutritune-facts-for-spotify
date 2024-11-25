@@ -4,8 +4,6 @@
     --black: #121212;
 }
 
-/* Test */
-
 * {
     font-family: sans-serif;
     text-align: center;
@@ -118,7 +116,7 @@ h2{
 }
 
 #selectPlaylistBox{
-    width: 40vw;
+    width: auto;
     height: auto;
     margin: 16px auto;
 }
@@ -179,12 +177,27 @@ h2{
 }
 
 .playlist p{
+    font-size: 2vmin;
     text-overflow: ellipsis;
     overflow: hidden;
+    max-width: 6vw;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+}
+@media screen and (max-width: 550px){
+    .playlist{
+        max-width: 12vw;
+    }
+    .playlist img{
+        width: 12vw;
+        height: 12vw;
+    }
+    .playlist p{
+        max-width: 12vw;
+        font-size: 2vmin;
+    }
 }
 
 #dataImage{
