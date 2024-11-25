@@ -6,6 +6,8 @@ import * as dotenv from "dotenv"
 import querystring from "node:querystring"
 import crypto from "node:crypto"
 
+console.log(1)
+
 dotenv.config()
 
 const app = express()
