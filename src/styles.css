@@ -185,18 +185,19 @@ h2{
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     line-clamp: 2;
+    word-wrap: break-word;
 }
-@media screen and (max-width: 550px){
+@media(max-width: 1000px){
     .playlist{
-        max-width: 12vw;
+        max-width: 16vw;
     }
     .playlist img{
-        width: 12vw;
-        height: 12vw;
+        width: 16vw;
+        height: 16vw;
     }
     .playlist p{
-        max-width: 12vw;
-        font-size: 2vmin;
+        max-width: 16vw;
+        font-size: 4vmin;
     }
 }
 
