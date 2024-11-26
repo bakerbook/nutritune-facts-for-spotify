@@ -62,7 +62,17 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "64px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
-            ctx.fillText(name, 20, 194) // Playlist name
+            console.log(`Text width: ${ctx.measureText(name).width}`)
+            if(ctx.measureText(name).width < 784){ // If the playlist name is fine by default
+                ctx.fillText(name, 20, 194)
+            }else{
+                ctx.font = "52px Inter, sans-serif"
+                if(ctx.measureText(name).width < 784){ // If playlist name is fine after slight shrink
+                    ctx.fillText(name, 20, 194)
+                }else{ // If playlist needs to shrink and be cut off
+                    ctx.fillText(cutDownName(name, 784), 20, 194)
+                }
+            }
             ctx.font = "58px Inter, sans-serif"
             if(profilePicture){
                 ctx.drawImage(profilePicture, 100, 211, 72, 72)
@@ -128,4 +138,18 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             }
         </>
     )
+}
+
+function cutDownName(name: string, limit: number): string{
+    const canvas = document.querySelector("canvas")
+    const ctx = canvas.getContext("2d")
+    ctx.font = "52px Inter, sans-serif"
+    const nameAsArray: string[] = name.split("")
+    let nameWidth: number = ctx.measureText(nameAsArray.join("")).width // Initial width
+    nameAsArray.push("...")
+    while(nameWidth > limit){
+        nameAsArray.splice(nameAsArray.length - 2, 1) // Get rid of the element before the ...
+        nameWidth = ctx.measureText(nameAsArray.join("")).width // Set new width
+    }
+    return nameAsArray.join("") // Return new shortened name with ... added
 }
