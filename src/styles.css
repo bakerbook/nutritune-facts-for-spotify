@@ -116,7 +116,7 @@ h2{
 }
 
 #selectPlaylistBox{
-    width: 40vw;
+    width: auto;
     height: auto;
     margin: 16px auto;
 }
@@ -161,7 +161,7 @@ h2{
 
 .playlist{
     display: inline-block;
-    max-width: 100%;
+    max-width: 6vw;
     overflow: visible;
     margin: 2vw;
     padding: 0;
@@ -173,6 +173,31 @@ h2{
     height: 6vw;
     &:hover{
         cursor: pointer;
+    }
+}
+
+.playlist p{
+    font-size: 2vmin;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 6vw;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    word-wrap: break-word;
+}
+@media(max-width: 1000px){
+    .playlist{
+        max-width: 16vw;
+    }
+    .playlist img{
+        width: 16vw;
+        height: 16vw;
+    }
+    .playlist p{
+        max-width: 16vw;
+        font-size: 4vmin;
     }
 }
 
