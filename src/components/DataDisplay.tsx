@@ -60,9 +60,9 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
             ctx.drawImage(playlistIcon, 814, 138, 150, 150)
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
-            ctx.font = "72px Inter, sans-serif"
+            ctx.font = "64px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
-            ctx.fillText(name, 20, 194)
+            ctx.fillText(name, 20, 194) // Playlist name
             ctx.font = "58px Inter, sans-serif"
             if(profilePicture){
                 ctx.drawImage(profilePicture, 100, 211, 72, 72)
@@ -112,15 +112,6 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             setImgSource(canvas.toDataURL())
         })
     }, [])
-
-    function saveImage(){
-        let link = document.createElement("a")
-        link.href = imgSource
-        link.download = "image.png"
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-    }
 
     return(
         <>
