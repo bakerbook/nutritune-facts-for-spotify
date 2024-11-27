@@ -304,11 +304,12 @@ async function getPlaylistDetails(playlistId, accessToken){
     top_artist["picture"] = topArtistPictureRequest
     delete top_artist["id"]
 
-    let userProfilePictureRequest = await getUserProfilePicture(data["owner"]["id"], accessToken)
-    if(userProfilePictureRequest["error"]){
-        return userProfilePictureRequest
+    let userProfilePicture = await getUserProfilePicture(data["owner"]["id"], accessToken)
+    if(userProfilePicture){
+        if(userProfilePicture["error"]){
+            return userProfilePicture
+        }
     }
-    const userProfilePicture = userProfilePictureRequest
 
     const playlist_icon = data["images"][0]["url"]
 
@@ -341,6 +342,7 @@ async function getArtistGenres(idArray, accessToken){
     }
     let genres = []
     data["artists"].forEach(artist => {
+        if(!artist) return
         try{
             if(artist["genres"][0]){ // Add every artist's first genre to the total list (if they have any)
                 genres.push(artist["genres"][0])
