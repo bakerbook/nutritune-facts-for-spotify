@@ -82,7 +82,7 @@ a.button{
     color: var(--white);
     user-select: none;
     font-size: 100%;
-    margin-top: 12px;
+    margin-top: 1vw;
     font-weight: bolder;
     align-items: center;
     padding: 8px;
@@ -187,6 +187,7 @@ h2{
     line-clamp: 2;
     word-wrap: break-word;
 }
+
 @media(max-width: 1000px){
     .playlist{
         max-width: 16vw;
@@ -219,6 +220,12 @@ h3{
 .infoContainer p {
     max-width: 30%;
 }
+@media (max-width: 650px){
+    .infoContainer p{
+        max-width: 80%;
+    }
+}
+
 .selectButtonHiglihghted{
     outline-style: solid;
     outline-width: thick;
