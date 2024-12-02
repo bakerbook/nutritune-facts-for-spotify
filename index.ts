@@ -1,16 +1,16 @@
-import express from "express"
+import express, { Express, Request, Response} from "express"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
-import path from "path"
+import * as path from "path"
 import * as dotenv from "dotenv"
-import querystring from "node:querystring"
-import crypto from "node:crypto"
+import { stringify } from "node:querystring"
+import { getRandomValues } from "node:crypto"
 
 dotenv.config()
 
-const app = express()
+const app: Express = express()
 
-const port = 3000
+const port: number = 3000
 
 const __dirname = path.resolve('')
 
@@ -20,16 +20,16 @@ app.use(cookieParser())
 
 const scope = "playlist-read-private playlist-read-collaborative"
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
     res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com platform-lookaside.fbsbx.com")
     res.sendFile(path.join(__dirname, "index.html"))
 })
 
-app.get("/login", (req, res) => {
+app.get("/login", (req: Request, res: Response) => {
     let state = generateRandomString(16)
     res.cookie("spotify_auth_state", state)
     res.redirect("https://accounts.spotify.com/authorize?" +
-        querystring.stringify({
+        stringify({
             response_type: "code",
             client_id: process.env.CLIENT_ID,
             scope: scope,
@@ -40,13 +40,13 @@ app.get("/login", (req, res) => {
 })
 
 app.get("/callback", (req, res) => {
-    let code = req["query"]["code"] || null
-    let state = req["query"]["state"] || null
-    let storedState = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
+    let code: string | null = req["query"]["code"] as string || null
+    let state: string | null = req["query"]["state"] as string || null
+    let storedState: string | null = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
     if(state === null || state !== storedState){
-        res.redirect("/?" + querystring.stringify({ error: "state_mismatch" }))
+        res.redirect("/?" + stringify({ error: "state_mismatch" }))
     }else{
-        const params = new URLSearchParams({
+        const params: URLSearchParams = new URLSearchParams({
             "client_id": process.env.CLIENT_ID,
             "client_secret": process.env.CLIENT_SECRET,
             "grant_type": "authorization_code",
@@ -66,20 +66,22 @@ app.get("/callback", (req, res) => {
             let profileRequest = await getProfileInformation(accessToken)
             if(profileRequest["error"]){
                 res.redirect("/")
+                return
+            }else{
+                const { username, user_id } = profileRequest
+                res.redirect("/?" + stringify({
+                    refresh_token: refreshToken,
+                    access_token: accessToken,
+                    username: username,
+                    user_id: user_id
+                }))
             }
-            const { username, user_id } = profileRequest
-            res.redirect("/?" + querystring.stringify({
-                refresh_token: refreshToken,
-                access_token: accessToken,
-                username: username,
-                user_id: user_id
-            }))
         })
     }
 })
 
-app.get("/api/getToken", (req, res) => {
-    const refreshToken = req["cookies"] ? req["cookies"]["refresh_token"] : null
+app.get("/api/getToken", (req: Request, res: Response) => {
+    const refreshToken: string | null = req["cookies"] ? req["cookies"]["refresh_token"] : null
     if(!refreshToken){
         res.send(JSON.stringify({ error: "Invalid refresh token" }))
         return
@@ -101,8 +103,8 @@ app.get("/api/getToken", (req, res) => {
     })
 })
 
-app.post("/api/getPlaylists", async (req, res) => {
-    const userId = req.body["user_id"]
+app.post("/api/getPlaylists", async (req: Request, res: Response) => {
+    const userId: string = req.body["user_id"]
     if(req["body"]["access_token"] === null){
         res.send(JSON.stringify({ error: "no_access_token" }))
     }else{
@@ -313,6 +315,8 @@ async function getPlaylistDetails(playlistId, accessToken){
 
     const playlist_icon = data["images"][0]["url"]
 
+    const topGenreNum: number = top_genre["number"] as number
+
     return {
         "user_profile_picture": userProfilePicture,
         "playlist_name": data["name"],
@@ -321,7 +325,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         "track_count": data["tracks"]["total"],
         "top_artist": top_artist,
         "top_genre": top_genre,
-        "genre_percentage": ((top_genre["number"] / genreCount) * 100).toFixed(1),
+        "genre_percentage": ((topGenreNum / genreCount) * 100).toFixed(1),
         "duration_data": durationData
     }
 }
@@ -409,6 +413,12 @@ async function getUserProfilePicture(id, accessToken){
 
 function generateRandomString(length){
     const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    const values = crypto.getRandomValues(new Uint8Array(length))
+    const values = getRandomValues(new Uint8Array(length))
     return values.reduce((acc, x) => acc + possible[x % possible.length], "")
+}
+
+type Playlist = {
+    name: string,
+    cover: string,
+    id: string
 }
