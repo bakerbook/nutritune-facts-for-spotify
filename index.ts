@@ -39,7 +39,7 @@ app.get("/login", (req: Request, res: Response) => {
     )
 })
 
-app.get("/callback", (req, res) => {
+app.get("/callback", (req: Request, res: Response) => {
     let code: string | null = req["query"]["code"] as string || null
     let state: string | null = req["query"]["state"] as string || null
     let storedState: string | null = req["cookies"] ? req["cookies"]["spotify_auth_state"] : null
@@ -61,14 +61,14 @@ app.get("/callback", (req, res) => {
             },
             body: params
         }).then(response => response.json()).then(async data => {
-            const accessToken = data["access_token"]
-            const refreshToken = data["refresh_token"]
-            let profileRequest = await getProfileInformation(accessToken)
+            const accessToken: string = data["access_token"]
+            const refreshToken: string = data["refresh_token"]
+            let profileRequest: Profile | Error = await getProfileInformation(accessToken)
             if(profileRequest["error"]){
                 res.redirect("/")
                 return
             }else{
-                const { username, user_id } = profileRequest
+                const { username, user_id } = profileRequest as Profile
                 res.redirect("/?" + stringify({
                     refresh_token: refreshToken,
                     access_token: accessToken,
@@ -86,7 +86,7 @@ app.get("/api/getToken", (req: Request, res: Response) => {
         res.send(JSON.stringify({ error: "Invalid refresh token" }))
         return
     }
-    const params = new URLSearchParams({
+    const params: URLSearchParams = new URLSearchParams({
         "grant_type": "refresh_token",
         "refresh_token": refreshToken,
         "client_id": process.env.CLIENT_ID,
@@ -108,15 +108,15 @@ app.post("/api/getPlaylists", async (req: Request, res: Response) => {
     if(req["body"]["access_token"] === null){
         res.send(JSON.stringify({ error: "no_access_token" }))
     }else{
-        const playlists = await getPlaylists(userId, JSON.parse(req.body["access_token"])["token"])
+        const playlists: Array<Playlist> | Error = await getPlaylists(userId, JSON.parse(req.body["access_token"])["token"])
         res.send(JSON.stringify(playlists))
     }
 })
 
-app.post("/api/getPlaylistDetails", async (req, res) => {
-    const playlistId = req.body["playlist_id"]
-    const accessToken = JSON.parse(req.body["access_token"])["token"]
-    const data = await getPlaylistDetails(playlistId, accessToken)
+app.post("/api/getPlaylistDetails", async (req: Request, res: Response) => {
+    const playlistId: string = req.body["playlist_id"]
+    const accessToken: string = JSON.parse(req.body["access_token"])["token"]
+    const data: PlaylistInfo | Error = await getPlaylistDetails(playlistId, accessToken)
     res.send(JSON.stringify(data))
 })
 
@@ -124,13 +124,13 @@ app.listen(process.env.PORT || port, () => {
     console.log(`App listening on port ${process.env.PORT || port}`)
 })
 
-async function getProfileInformation(accessToken){
+async function getProfileInformation(accessToken: string): Promise<Profile | Error> {
     const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
             "Authorization": `Bearer ${accessToken}`
         }
     })
-    const data = await response.json()
+    const data: UserInfo | Error = await response.json()
     if(data["error"]){
         if(data["error"]["status"] === 429){
             return { error: "too many requests, try again later" }
@@ -145,7 +145,7 @@ async function getProfileInformation(accessToken){
     }
 }
 
-async function getPlaylists(userId, accessToken){
+async function getPlaylists(userId: string, accessToken: string): Promise<Array<Playlist> | Error> {
     const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists?limit=50&offset=0`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -159,7 +159,7 @@ async function getPlaylists(userId, accessToken){
             return { error: "400 Bad Request"}
         }
     }
-    const playlists = []
+    const playlists: Array<Playlist> = []
     data["items"].forEach(playlist => {
         if(playlist["tracks"]["total"] == 0){ // Don't show user playlist if it's empty
             return
@@ -167,7 +167,7 @@ async function getPlaylists(userId, accessToken){
         if(!playlist["images"]){ // Don't show playlist if it has no cover image
             return
         }
-        let cover = playlist["images"][0]["url"]
+        let cover: string = playlist["images"][0]["url"]
         playlists.push({
             name: playlist["name"],
             cover: cover,
@@ -177,7 +177,7 @@ async function getPlaylists(userId, accessToken){
     return playlists
 }
 
-async function getData(total, playlistId, accessToken){
+async function getData(total: number, playlistId: string, accessToken: string) {
     let artistData = {}
     let genres = {}
     let totalDurationMilliseconds = 0
@@ -213,7 +213,7 @@ async function getData(total, playlistId, accessToken){
         const chunk = idArray.slice(i, i+50)
         let data = await getArtistGenres(chunk, accessToken)
         if(data["error"]){
-            return data
+            return { error: data["error"] }
         }
         bigGenreList = bigGenreList.concat(data)
     }
@@ -250,7 +250,7 @@ async function getData(total, playlistId, accessToken){
     }
 }
 
-async function getPlaylistDetails(playlistId, accessToken){
+async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo | Error> {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -276,11 +276,12 @@ async function getPlaylistDetails(playlistId, accessToken){
     let top_artist = {
         name: Object.keys(artistData)[0],
         number: Object.values(artistData)[0]["songNumber"],
-        id: Object.values(artistData)[0]["id"]
+        id: Object.values(artistData)[0]["id"],
+        picture: null
     }
     let top_genre = {
         name: Object.keys(genres)[0],
-        number: Object.values(genres)[0]
+        number: Object.values(genres)[0] as number
     }
     
     for(const [artistName, obj] of Object.entries(artistData)){
@@ -291,9 +292,9 @@ async function getPlaylistDetails(playlistId, accessToken){
         }
     }
     for(const [name, number] of Object.entries(genres)){
-        if(number > top_genre["number"]){
+        if(number as number > (top_genre["number"] as number)){
             top_genre["name"] = name
-            top_genre["number"] = number
+            top_genre["number"] = number as number
         }
     }
 
@@ -301,7 +302,7 @@ async function getPlaylistDetails(playlistId, accessToken){
 
     let topArtistPictureRequest = await getArtistProfilePicture(top_artist["id"], accessToken)
     if(topArtistPictureRequest["error"]){
-        return topArtistPictureRequest
+        return { error: topArtistPictureRequest["error"] }
     }
     top_artist["picture"] = topArtistPictureRequest
     delete top_artist["id"]
@@ -313,7 +314,7 @@ async function getPlaylistDetails(playlistId, accessToken){
         }
     }
 
-    const playlist_icon = data["images"][0]["url"]
+    const playlist_icon: string = data["images"][0]["url"]
 
     const topGenreNum: number = top_genre["number"] as number
 
@@ -417,8 +418,58 @@ function generateRandomString(length){
     return values.reduce((acc, x) => acc + possible[x % possible.length], "")
 }
 
+type Profile = {
+    username: string,
+    user_id: string,
+    pfp: string | null
+}
+type Error = {
+    error: string
+}
 type Playlist = {
     name: string,
     cover: string,
     id: string
+}
+type PlaylistInfo = {
+    user_profile_picture: string | null,
+    playlist_name: string,
+    playlist_owner: string,
+    playlist_icon: string,
+    track_count: number,
+    top_artist: {
+        name: string,
+        number: number,
+        picture: string | null
+    },
+    top_genre: {
+        name: string,
+        number: number
+    },
+    genre_percentage: string,
+    duration_data: {
+        longer: number,
+        shorter: number,
+        average: string,
+        averageString: string
+    }
+}
+type UserInfo = {
+    display_name: string,
+    external_urls: {
+        spotify: string
+    },
+    followers: {
+        href: string | null,
+        total: number
+    },
+    href: string,
+    id: string,
+    images: Array<{
+        height: number | null,
+        url: string,
+        width: number | null
+    }>,
+    type: string,
+    uri: string
 }
