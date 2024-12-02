@@ -177,8 +177,8 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
     return playlists
 }
 
-async function getData(total: number, playlistId: string, accessToken: string) {
-    let artistData = {}
+async function getData(total: number, playlistId: string, accessToken: string): Promise<GetDataReturns | Error>{
+    let artistData: GetDataReturns["artistData"] = {}
     let genres = {}
     let totalDurationMilliseconds = 0
     let bigGenreList = []
@@ -187,7 +187,7 @@ async function getData(total: number, playlistId: string, accessToken: string) {
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
         if(currentSet["error"]){
-            return currentSet
+            return { error: currentSet["error"] }
         }
         currentSet["items"].forEach(song => {
             if(song["track"]){
@@ -242,6 +242,8 @@ async function getData(total: number, playlistId: string, accessToken: string) {
         }
     })
 
+    console.log(artistData)
+
     return {
         artistData,
         durationData,
@@ -268,10 +270,10 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
     let infoRequest = await getData(data["tracks"]["total"], playlistId, accessToken)
 
     if(infoRequest["error"]){
-        return infoRequest
+        return { error: infoRequest["error"] }
     }
 
-    let { artistData, durationData, genres, genreCount } = infoRequest
+    let { artistData, durationData, genres, genreCount } = infoRequest as any
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -300,7 +302,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
 
     durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(durationData["average"].split(".")[1] * 60).substring(0, 2)
 
-    let topArtistPictureRequest = await getArtistProfilePicture(top_artist["id"], accessToken)
+    let topArtistPictureRequest: string | Error = await getArtistProfilePicture(top_artist["id"], accessToken)
     if(topArtistPictureRequest["error"]){
         return { error: topArtistPictureRequest["error"] }
     }
@@ -310,7 +312,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
     let userProfilePicture = await getUserProfilePicture(data["owner"]["id"], accessToken)
     if(userProfilePicture){
         if(userProfilePicture["error"]){
-            return userProfilePicture
+            return { error: userProfilePicture["error"] }
         }
     }
 
@@ -319,7 +321,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
     const topGenreNum: number = top_genre["number"] as number
 
     return {
-        "user_profile_picture": userProfilePicture,
+        "user_profile_picture": userProfilePicture as string,
         "playlist_name": data["name"],
         "playlist_owner": data["owner"]["display_name"],
         "playlist_icon": playlist_icon,
@@ -331,7 +333,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
     }
 }
 
-async function getArtistGenres(idArray, accessToken){
+async function getArtistGenres(idArray: Array<string>, accessToken: string): Promise<Array<string> | Error> {
     const response = await fetch(`https://api.spotify.com/v1/artists?ids=${idArray.join(",")}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -345,7 +347,7 @@ async function getArtistGenres(idArray, accessToken){
             return { error: "400 Bad Request"}
         }
     }
-    let genres = []
+    let genres: Array<string> = []
     data["artists"].forEach(artist => {
         if(!artist) return
         try{
@@ -357,7 +359,7 @@ async function getArtistGenres(idArray, accessToken){
     return genres
 }
 
-async function getArtistProfilePicture(id, accessToken){
+async function getArtistProfilePicture(id: string, accessToken: string): Promise<string | Error>{
     const response = await fetch(`https://api.spotify.com/v1/artists/${id}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -374,7 +376,7 @@ async function getArtistProfilePicture(id, accessToken){
     return data["images"][0]["url"]
 }
 
-async function getTracks(playlistId, offset, accessToken){
+async function getTracks(playlistId: string, offset: number, accessToken: string): Promise<Array<Song> | Error > {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?offset=${offset}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}` 
@@ -391,7 +393,7 @@ async function getTracks(playlistId, offset, accessToken){
     return data
 }
 
-async function getUserProfilePicture(id, accessToken){
+async function getUserProfilePicture(id: string, accessToken: string): Promise<string | null | Error >{
     const response = await fetch(`https://api.spotify.com/v1/users/${id}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -412,7 +414,7 @@ async function getUserProfilePicture(id, accessToken){
     }
 }
 
-function generateRandomString(length){
+function generateRandomString(length: number): string{
     const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     const values = getRandomValues(new Uint8Array(length))
     return values.reduce((acc, x) => acc + possible[x % possible.length], "")
@@ -472,4 +474,102 @@ type UserInfo = {
     }>,
     type: string,
     uri: string
+}
+type Song = {
+    added_at: string,
+    added_by: {
+        external_urls: {
+            spotify: string
+        },
+        followers: {
+            href: string,
+            total: number
+        },
+        href: string,
+        id: string,
+        type: string,
+        uri: string
+    },
+    is_local: boolean,
+    track: {
+        album: {
+            album_type: string,
+            total_tracks: number,
+            available_markets: Array<string>,
+            external_urls: {
+                spotify: string
+            },
+            href: string,
+            id: string,
+            images: Array<{
+                url: string,
+                height: number,
+                width: number
+            }>,
+            name: string,
+            release_date: string,
+            release_date_precision: string,
+            restrictions: {
+                reason: string
+            },
+            type: string,
+            uri: string,
+            artists: Array<{
+                external_urls: {
+                    spotify: string
+                },
+                href: string,
+                id: string,
+                name: string,
+                type: string,
+                uri: string
+            }>
+        },
+        artists: Array<{
+            external_urls: {
+                spotify: string
+            },
+            href: string,
+            id: string,
+            name: string,
+            type: string,
+            uri: string
+        }>,
+        available_markets: Array<string>,
+        disc_number: number,
+        duration_ms: number,
+        explicit: boolean,
+        external_ids: {
+            isrc: string,
+            ean: string,
+            upc: string
+        },
+        external_urls: {
+            spotify: string
+        },
+        href: string,
+        id: string,
+        is_playable: boolean,
+        linked_from: object,
+        restrictions: {
+            reason: string
+        },
+        name: string,
+        popularity: number,
+        preview_url: string,
+        track_number: number,
+        type: string,
+        uri: string,
+        is_local: boolean
+    }
+}
+type GetDataReturns = {
+    artistData: {
+        name: string,
+        songNumber: number,
+        id: string
+    },
+    durationData: object,
+    genres: object,
+    genreCount: number
 }
