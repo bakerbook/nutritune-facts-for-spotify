@@ -12,13 +12,13 @@ const app: Express = express()
 
 const port: number = 3000
 
-const __dirname = path.resolve('')
+const __dirname: string = path.resolve('')
 
 app.use("/dist", express.static(path.join(__dirname, '/dist')));
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-const scope = "playlist-read-private playlist-read-collaborative"
+const scope: string = "playlist-read-private playlist-read-collaborative"
 
 app.get("/", (req: Request, res: Response) => {
     res.set("Content-Security-Policy", "default-src 'self'; style-src 'self'; img-src 'self' data: *.scdn.co *.spotifycdn.com platform-lookaside.fbsbx.com")
@@ -311,7 +311,7 @@ async function getPlaylistDetails(playlistId: string, accessToken: string): Prom
     top_artist["picture"] = topArtistPictureRequest
     delete top_artist["id"]
 
-    let userProfilePicture: string | Error = await getUserProfilePicture(data["owner"]["id"], accessToken)
+    let userProfilePicture: string | Error | null = await getUserProfilePicture(data["owner"]["id"], accessToken)
     if(userProfilePicture){
         if(userProfilePicture["error"]){
             return { error: userProfilePicture["error"] }
