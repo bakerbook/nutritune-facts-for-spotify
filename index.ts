@@ -178,11 +178,15 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
 }
 
 async function getData(total: number, playlistId: string, accessToken: string): Promise<GetDataReturns | Error>{
-    let artistData: GetDataReturns["artistData"] = {}
-    let genres = {}
-    let totalDurationMilliseconds = 0
-    let bigGenreList = []
-    let durationList = []
+    let artistData: GetDataReturns["artistData"] = {
+        "name": "",
+        "songNumber": 0,
+        "id": ""
+    }
+    let genres: GetDataReturns["genres"] = {}
+    let totalDurationMilliseconds: number = 0
+    let bigGenreList: Array<string> = []
+    let durationList: Array<number> = []
     let idArray = []
     for(let i = 0; i < (Math.ceil(total) / 100)*100; i += 100){
         const currentSet = await getTracks(playlistId, i, accessToken)
@@ -211,11 +215,11 @@ async function getData(total: number, playlistId: string, accessToken: string): 
     
     for(let i = 0; i < idArray.length; i += 50){
         const chunk = idArray.slice(i, i+50)
-        let data = await getArtistGenres(chunk, accessToken)
+        let data: Array<string> | Error = await getArtistGenres(chunk, accessToken)
         if(data["error"]){
             return { error: data["error"] }
         }
-        bigGenreList = bigGenreList.concat(data)
+        bigGenreList = bigGenreList.concat(data as Array<string>)
     }
     
     bigGenreList.forEach(genre => {
@@ -242,8 +246,6 @@ async function getData(total: number, playlistId: string, accessToken: string): 
         }
     })
 
-    console.log(artistData)
-
     return {
         artistData,
         durationData,
@@ -252,7 +254,7 @@ async function getData(total: number, playlistId: string, accessToken: string): 
     }
 }
 
-async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo | Error> {
+async function getPlaylistDetails(playlistId: string, accessToken: string): Promise<PlaylistInfo | Error> {
     const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
         headers: {
             "Authorization": `Bearer ${accessToken}`
@@ -267,13 +269,13 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
         }
     }
 
-    let infoRequest = await getData(data["tracks"]["total"], playlistId, accessToken)
+    let infoRequest: GetDataReturns | Error = await getData(data["tracks"]["total"], playlistId, accessToken)
 
     if(infoRequest["error"]){
         return { error: infoRequest["error"] }
     }
 
-    let { artistData, durationData, genres, genreCount } = infoRequest as any
+    let { artistData, durationData, genres, genreCount } = infoRequest as GetDataReturns
 
     let top_artist = {
         name: Object.keys(artistData)[0],
@@ -300,7 +302,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
         }
     }
 
-    durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(durationData["average"].split(".")[1] * 60).substring(0, 2)
+    durationData["averageString"] = String(durationData["average"].split(".")[0]) + ":" + String(60 * Number(durationData["average"].split(".")[1])).substring(0, 2)
 
     let topArtistPictureRequest: string | Error = await getArtistProfilePicture(top_artist["id"], accessToken)
     if(topArtistPictureRequest["error"]){
@@ -309,7 +311,7 @@ async function getPlaylistDetails(playlistId, accessToken): Promise<PlaylistInfo
     top_artist["picture"] = topArtistPictureRequest
     delete top_artist["id"]
 
-    let userProfilePicture = await getUserProfilePicture(data["owner"]["id"], accessToken)
+    let userProfilePicture: string | Error = await getUserProfilePicture(data["owner"]["id"], accessToken)
     if(userProfilePicture){
         if(userProfilePicture["error"]){
             return { error: userProfilePicture["error"] }
@@ -567,9 +569,14 @@ type GetDataReturns = {
     artistData: {
         name: string,
         songNumber: number,
-        id: string
+        id: string,
     },
-    durationData: object,
+    durationData: {
+        longer: number,
+        shorter: number,
+        average: string,
+        averageString: string,
+    },
     genres: object,
     genreCount: number
 }
