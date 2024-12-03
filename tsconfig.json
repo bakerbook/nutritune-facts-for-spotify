@@ -1,6 +1,10 @@
 {
+    "include": ["./index.ts"],
     "compilerOptions": {
-        "jsx": "react-jsx",
-        "moduleResolution": "node"
+        "module": "ES6",
+        "moduleResolution": "node10",
+        "target": "ES6",
+        "esModuleInterop": true,
+        "outDir": "./dist",
     }
 }
