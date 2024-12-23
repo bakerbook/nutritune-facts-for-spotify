@@ -178,11 +178,7 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
 }
 
 async function getData(total: number, playlistId: string, accessToken: string): Promise<GetDataReturns | Error>{
-    let artistData: GetDataReturns["artistData"] = {
-        "name": "",
-        "songNumber": 0,
-        "id": ""
-    }
+    let artistData: GetDataReturns["artistData"] = {}
     let genres: GetDataReturns["genres"] = {}
     let totalDurationMilliseconds: number = 0
     let bigGenreList: Array<string> = []
@@ -277,7 +273,7 @@ async function getPlaylistDetails(playlistId: string, accessToken: string): Prom
 
     let { artistData, durationData, genres, genreCount } = infoRequest as GetDataReturns
 
-    let top_artist = {
+    let top_artist: TopArtist = {
         name: Object.keys(artistData)[0],
         number: Object.values(artistData)[0]["songNumber"],
         id: Object.values(artistData)[0]["id"],
@@ -435,17 +431,19 @@ type Playlist = {
     cover: string,
     id: string
 }
+type TopArtist = {
+    name: string,
+    number: number,
+    picture: string | null | Error
+    id: string | null
+}
 type PlaylistInfo = {
     user_profile_picture: string | null,
     playlist_name: string,
     playlist_owner: string,
     playlist_icon: string,
     track_count: number,
-    top_artist: {
-        name: string,
-        number: number,
-        picture: string | null
-    },
+    top_artist: TopArtist,
     top_genre: {
         name: string,
         number: number
@@ -566,11 +564,7 @@ type Song = {
     }
 }
 type GetDataReturns = {
-    artistData: {
-        name: string,
-        songNumber: number,
-        id: string,
-    },
+    artistData: object
     durationData: {
         longer: number,
         shorter: number,
