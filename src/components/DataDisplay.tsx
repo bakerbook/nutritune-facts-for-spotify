@@ -29,6 +29,10 @@ interface DataDisplayProps{
 export default function DataDisplay({ userProfilePicture, durationData, name, topGenre, genrePercentage, owner, topArtist, trackCount, icon }: DataDisplayProps){
     const [imgSource, setImgSource] = useState(null)
 
+    const artistPercentage: string = String((topArtist["number"] / trackCount * 100).toFixed(1))
+    const shorterDuration: string = String((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1))
+    const longerDuration: string = String((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1))
+
     useEffect(() => {
         async function loadFont(){
             const font: FontFace = new FontFace("Inter", `url(${Font})`)
@@ -62,7 +66,6 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "64px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
-            console.log(`Text width: ${ctx.measureText(name).width}`)
             if(ctx.measureText(name).width < 784){ // If the playlist name is fine by default
                 ctx.fillText(name, 20, 194)
             }else{
@@ -75,49 +78,25 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             }
             ctx.font = "58px Inter, sans-serif"
             if(profilePicture){
-                ctx.drawImage(profilePicture, 100, 211, 72, 72)
+                ctx.drawImage(profilePicture, 100, 211, 72, 72) // Draw profile picture and name
                 ctx.fillText(owner, 182, 266)
             }else{
-                ctx.fillText(owner, 100, 266)
+                ctx.fillText(owner, 100, 266) // Just draw name
             }
             ctx.font = "104px Inter, sans-serif"
             ctx.fillStyle = "#121212"
-            ctx.fillText(String(trackCount), 833 - ((String(trackCount).length - 2) * 69), 485)
+            ctx.fillText(String(trackCount), 953 - ctx.measureText(String(trackCount)).width, 485) // Track count, position based on width
             ctx.font = "64px Inter, sans-serif"
-            ctx.fillText(topArtist["name"], 168, 748)
-            ctx.fillText(String(topArtist["number"]) + " songs", 102, 816)
-            if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 2){
-                if((String((topArtist["number"] / trackCount * 100).toFixed(1)).replace(".", "")).length > 3){
-                    ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 740, 672)
-                }else{
-                    ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 780, 672)
-                }
-            }else{
-                ctx.fillText(String((topArtist["number"] / trackCount * 100).toFixed(1)), 820, 672)
-            }
-            ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962)
-            if((genrePercentage.replace(".", "")).length > 2){
-                if((genrePercentage.replace(".", "")).length > 3){
-                    ctx.fillText(genrePercentage, 738, 890)
-                }else{
-                    ctx.fillText(genrePercentage, 780, 890)
-                }
-            }else{
-                ctx.fillText(genrePercentage, 822, 890)
-            }
-            ctx.fillText(durationData["averageString"], 694, 1035)
-            ctx.fillText(durationData["longer"] + " longer", 102, 1109)
-            ctx.fillText(durationData["shorter"] + " shorter", 102, 1183)
-            if((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
-                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 780, 1109)
-            }else{
-                ctx.fillText((durationData["longer"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 822, 1109)
-            }
-            if((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1).length > 2){
-                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 780, 1183)
-            }else{
-                ctx.fillText((durationData["shorter"] / (durationData["longer"]+durationData["shorter"]) * 100).toFixed(1), 822, 1183)
-            }
+            ctx.fillText(topArtist["name"], 168, 748) // Top artist name
+            ctx.fillText(String(topArtist["number"]) + " songs", 102, 816) // Top artist number of songs; {number} songs
+            ctx.fillText(artistPercentage, 918 - ctx.measureText(artistPercentage).width, 672) // Top artist percentage
+            ctx.fillText(topGenre["name"].charAt(0).toUpperCase() + topGenre["name"].slice(1), 102, 962) // Top genre name
+            ctx.fillText(genrePercentage, 918 - ctx.measureText(genrePercentage).width, 890) // Top genre percentage
+            ctx.fillText(durationData["averageString"], 694, 1035) // Average duration
+            ctx.fillText(durationData["longer"] + " longer", 102, 1109) // {number} longer
+            ctx.fillText(durationData["shorter"] + " shorter", 102, 1183) // {number} shorter
+            ctx.fillText(longerDuration, 918 - ctx.measureText(longerDuration).width, 1109) // Longer percentage
+            ctx.fillText(shorterDuration, 918 - ctx.measureText(shorterDuration).width, 1183) // Shorter percentage
 
             setImgSource(canvas.toDataURL())
         })
