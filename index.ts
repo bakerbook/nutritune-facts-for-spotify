@@ -151,7 +151,18 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
             "Authorization": `Bearer ${accessToken}`
         }
     })
-    const data = await response.json()
+    let allPlaylists: Array<Object> = []
+    let data = await response.json()
+    allPlaylists = allPlaylists.concat(data["items"])
+    while(data["next"]){
+        const response = await fetch(data["next"], {
+            headers: {
+                "Authorization": `Bearer ${accessToken}`
+            }
+        })
+        data = await response.json()
+        allPlaylists = allPlaylists.concat(data["items"])
+    }
     if(data["error"]){
         if(data["error"]["status"] === 429){
             return { error: "too many requests, try again later" }
@@ -159,8 +170,8 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
             return { error: "400 Bad Request"}
         }
     }
-    const playlists: Array<Playlist> = []
-    data["items"].forEach(playlist => {
+    const filteredPlaylists: Array<Playlist> = []
+    allPlaylists.forEach(playlist => {
         if(playlist["tracks"]["total"] == 0){ // Don't show user playlist if it's empty
             return
         }
@@ -168,13 +179,13 @@ async function getPlaylists(userId: string, accessToken: string): Promise<Array<
             return
         }
         let cover: string = playlist["images"][0]["url"]
-        playlists.push({
+        filteredPlaylists.push({
             name: playlist["name"],
             cover: cover,
             id: playlist["href"].split("playlists/")[1]
         })
     })
-    return playlists
+    return filteredPlaylists
 }
 
 async function getData(total: number, playlistId: string, accessToken: string): Promise<GetDataReturns | Error>{
