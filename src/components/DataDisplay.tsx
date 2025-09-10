@@ -53,6 +53,13 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             })
         }
         const canvas = document.querySelector("canvas")
+        
+        // Make canvas temporarily visible for drawing
+        canvas.style.display = 'block';
+        canvas.style.position = 'absolute';
+        canvas.style.top = '-9999px';
+        canvas.style.left = '0';
+        
         const ctx = canvas.getContext("2d")
         Promise.all([
             loadImage(Background),
@@ -61,8 +68,17 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             loadImage(topArtist["picture"]),
             loadFont()
         ]).then(([backgroundImage, profilePicture, playlistIcon, artistIcon]) => {
+            // Clear canvas first
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Test: Draw a simple rectangle to see if canvas is working
+            ctx.fillStyle = 'red';
+            ctx.fillRect(0, 0, 100, 100);
+            
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
+            
             ctx.drawImage(playlistIcon, 814, 138, 150, 150)
+            
             ctx.drawImage(artistIcon, 100, 692, 64, 64)
             ctx.font = "64px Inter, sans-serif"
             ctx.fillStyle = "#1DB954"
@@ -98,24 +114,62 @@ export default function DataDisplay({ userProfilePicture, durationData, name, to
             ctx.fillText(longerDuration, 918 - ctx.measureText(longerDuration).width, 1109) // Longer percentage
             ctx.fillText(shorterDuration, 918 - ctx.measureText(shorterDuration).width, 1183) // Shorter percentage
 
-            setImgSource(canvas.toDataURL())
+            const dataURL = canvas.toDataURL()
+            canvas.style.display = 'none';
+            
+            setImgSource(dataURL)
         })
     }, [])
 
     return(
-        <>
-            <canvas width="982px" height="1498px">Canvas is not supported</canvas>
+        <div className="space-y-8">
+            <canvas width="982px" height="1498px" className="hidden">Canvas is not supported</canvas>
             {
                 imgSource ? (
-                    <>
-                        <img id="dataImage" className="centered" src={imgSource}></img>
-                        <a id="downloadButton" className="hoverAnimation" download="image.png" href={imgSource}>Download image</a>
-                    </>
+                    <div className="bg-white rounded-2xl shadow-lg p-8">
+                        <div className="text-center mb-6">
+                            <h3 className="text-3xl font-bold text-gray-900 mb-2">Playlist Analysis Complete!</h3>
+                            <p className="text-gray-600">Here's your personalized nutrition label for <span className="font-semibold text-[#1DB954]">{name}</span></p>
+                        </div>
+                        
+                        <div className="flex justify-center mb-6">
+                            <div className="relative group max-w-md">
+                                <img 
+                                    id="dataImage" 
+                                    className="w-full h-auto rounded-xl shadow-lg group-hover:shadow-xl transition-shadow duration-300" 
+                                    src={imgSource}
+                                    alt="Playlist nutrition facts"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="text-center">
+                            <a 
+                                id="downloadButton" 
+                                className="inline-flex items-center space-x-2 bg-[#1DB954] hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl" 
+                                download="playlist-nutrition-facts.png" 
+                                href={imgSource}
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                <span>Download Nutrition Facts</span>
+                            </a>
+                        </div>
+                    </div>
                 ) : (
-                    null
+                    <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">Generating Your Analysis</h3>
+                        <p className="text-gray-600">Please wait while we process your playlist data...</p>
+                    </div>
                 )
             }
-        </>
+        </div>
     )
 }
 

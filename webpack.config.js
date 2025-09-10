@@ -9,7 +9,7 @@ const __dirname = path.resolve('')
 export default {
     entry: './src/main.tsx',
 
-    mode: process.env.WEBPACK_MODE,
+    mode: process.env.WEBPACK_MODE || 'production',
 
     output: {
         path: path.join(__dirname, '/dist'),
@@ -31,7 +31,7 @@ export default {
             {
                 test: /\.css$/,
                 exclude: /node_modules/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader']
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
             },
             {
                 test: /\.png$/,

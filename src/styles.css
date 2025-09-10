@@ -1,282 +1,85 @@
+@import "tailwindcss";
+
 :root{
     --green: #1DB954;
     --white: #FFFFFF;
     --black: #121212;
+    --color-spotify-green: #1DB954;
+    --color-spotify-black: #121212;
+    --color-spotify-white: #FFFFFF;
 }
 
 * {
-    font-family: sans-serif;
-    text-align: center;
+    font-family: 'Inter', system-ui, sans-serif;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    justify-content: center;
     &::-webkit-scrollbar{
         display: none
     }
 }
 
-.centered{
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    text-align: center;
-}
-
-.highlighted{
-    outline-width: 10%;
-    outline-style: solid;
-    outline-color: black
-}
-
-body {
-    background-color: var(--white);
-    color: var(--black);
-}
-
-div{
-    margin: 2vw;
-}
-
-h1 {
-    font-size: 64px;
-    color: var(--green);
-}
-
-p {
-    font-weight: bolder;
-}
-
-ul{
-    margin-bottom: 4px;
-    padding: 0;
-    display: inline-block;
-}
-
-a.button{
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
-    text-decoration: none;
-    width: 300px;
-    height: 150px;
-    padding: 10px 20px;
-    line-height: 150px;
-    background-color: var(--green);
-    color: var(--white);
-    border: 1px solid var(--white);
-    border-radius: 4px;
-    font-size: 36px;
-    user-select: none;
-    &:hover{
-        background-color: #199e48
-    }
-}
-#downloadButton{
-    -webkit-appearance: button;
-    -moz-appearance: button;
-    appearance: button;
-    text-decoration: none;
-    width: auto;
-    height: auto;
-    background-color: var(--black);
-    color: var(--white);
-    user-select: none;
-    font-size: 100%;
-    margin-top: 1vw;
-    font-weight: bolder;
-    align-items: center;
-    padding: 8px;
-    border-radius: 16px;
-}
-
-h2{
-    font-size: 48px;
-    color: var(--black)
-}
-
-.redButton{
-    background-color: #FF0000;
-    color: var(--white);
-    font-weight: 900;
-    border-radius: 8px;
-    border-style: none;
-    width: 128px;
-    height: 32px;
-    &:hover{
-        background-color: #bf0000;
-        cursor: pointer;
-    }
-}
-
-.hoverAnimation{
-    transition: transform 0.2s;
-    &:hover{
-        transform: scale(1.1)
-    }
-}
-
-#selectPlaylistBox{
-    width: auto;
-    height: auto;
-    margin: 16px auto;
-}
-#selectPlaylistBox div button{
-    background-color: var(--green);
-    border-style: none;
-    border-radius: 5vw;
-    width: 36%;
-    height: 64px;
-    color: var(--white);
-    text-align: center;
-    white-space: normal;
-    overflow: visible;
-    font-size: 1vw;
-    font-weight: bold;
-    &:hover{
-        background-color: #199e48
-    }
-}
-
-#selectPlaylistButton{
-    background-color: var(--black);
-    color: var(--white);
-    font-size: 24px;
-    font-weight: 900;
-    border-style: none;
-    border-radius: 8px;
-    width: 16vw;
-    height: 72px;
-    margin: 16px auto;
-    &:hover{
-        cursor: pointer;
-    }
-}
-
-#playlistContainer{
-    width: auto;
-    height: auto;
-    padding-bottom: 16px;
-    outline: solid 0.25vw var(--green)
-}
-
-.playlist{
-    display: inline-block;
-    max-width: 6vw;
-    overflow: visible;
-    margin: 2vw;
-    padding: 0;
-    vertical-align: top
-}
-
-.playlist img{
-    width: 6vw;
-    height: 6vw;
-    &:hover{
-        cursor: pointer;
-    }
-}
-
-.playlist p{
-    font-size: 2vmin;
-    text-overflow: ellipsis;
+/* Custom utility classes for line clamping */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    max-width: 6vw;
+}
+
+.line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    line-clamp: 2;
-    word-wrap: break-word;
+    overflow: hidden;
 }
 
-@media(max-width: 1000px){
-    .playlist{
-        max-width: 16vw;
+/* Smooth scrolling for better UX */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom focus styles for accessibility */
+*:focus {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+/* Ensure proper text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--green);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #199e48;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar-track {
+        background: #2d2d2d;
     }
-    .playlist img{
-        width: 16vw;
-        height: 16vw;
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--green);
     }
-    .playlist p{
-        max-width: 16vw;
-        font-size: 4vmin;
-    }
-}
-
-#dataImage{
-    outline: solid black 6px;
-}
-
-h3{
-    font-size: 32px;
-}
-
-.mainContent{
-    margin-bottom: 4vh;
-}
-
-.infoContainer h3{
-    text-decoration: underline;
-}
-.infoContainer p {
-    max-width: 30%;
-}
-@media (max-width: 650px){
-    .infoContainer p{
-        max-width: 80%;
-    }
-}
-
-.selectButtonHiglihghted{
-    outline-style: solid;
-    outline-width: thick;
-    outline-color: var(--green)
-}
-
-#dataImage{
-    max-width: 491px;
-    max-height: 749px;
-    width: 100%;
-    height: 100%;
-}
-
-canvas{
-    display: none
-}
-
-@media(max-width: 670px){
-    #selectPlaylistButton{
-        font-size: 3vw
-    }
-}
-@media(max-width: 1020px){
-    #selectPlaylistBox div button{
-        font-size: 2vw
-    }
-}
-
-
-/* for dark mode users */
-
-@media(prefers-color-scheme: dark){
-    body{
-        background-color: var(--black);
-        color: var(--white);
-    }
-    h2{
-        color: var(--white)
-    }
-    #selectPlaylistButton{
-        background-color: var(--white);
-        color: var(--black);
-    }
-    .highlighted{
-        outline-color: white
-    }
-    #dataImage{
-        outline: transparent
-    }
-    #downloadButton{
-        background-color: var(--white);
-        color: var(--black);
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #22c55e;
     }
 }
