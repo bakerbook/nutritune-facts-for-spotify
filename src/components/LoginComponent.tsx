@@ -10,7 +10,7 @@ function logout(){
 }
 
 async function getNewToken(){
-    const response = await fetch("api/getToken", {
+    const response = await fetch("/api/getToken", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -61,8 +61,8 @@ export default function LoginComponent(){
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to NutriTune Facts</h2>
                             <p className="text-gray-600">Connect your Spotify account to analyze your playlists and discover interesting insights about your music taste.</p>
                         </div>
-                        <a 
-                            href={"login"} 
+                        <a
+                            href="/api/login"
                             className="inline-flex items-center justify-center w-full bg-[#1DB954] hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                         >
                             <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
