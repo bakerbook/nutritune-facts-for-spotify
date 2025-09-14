@@ -40,7 +40,7 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
                                 We don't collect your data in any way. Your Spotify playlist information is only used 
                                 to display the nutrition facts visualization and is not stored or retained by us.
 
-                                If you have any questions, you can contact me at <span className="text-blue-500">baker@bakerbook.me</span>.
+                                If you have any questions, you can contact me at <span className="text-blue-500">bakerbook@ucla.edu</span>.
                             </p>
                         </section>
                     </div>
