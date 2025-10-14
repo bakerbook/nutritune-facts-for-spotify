@@ -14,15 +14,7 @@ const {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
         let code: string | null = req.query.code as string | null
-        let state: string | null = req.query.state as string | null
-        
-        const cookies = cookie.parse(req.headers.cookie || "")
-        let storedState: string | null = cookies.spotify_auth_state || null
-        
-        if(state === null || state !== storedState){
-            return res.redirect(400, "/?" + stringify({ error: "state_mismatch" }))
-        }
-        
+
         const params: URLSearchParams = new URLSearchParams({
             "client_id": SPOTIFY_CLIENT_ID!,
             "client_secret": SPOTIFY_CLIENT_SECRET!,
@@ -38,9 +30,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             },
             body: params
         })
-        
+
         const data = await tokenResponse.json()
-        
+
         if(data.error) {
             return res.redirect(400, "/?" + stringify({ error: data.error }))
         }
