@@ -4,8 +4,12 @@
 
 :root{
     --green: #1DB954;
+    --green-hover: #1ed760;
     --white: #FFFFFF;
-    --black: #121212;
+    --black: #0a0a0a;
+    --surface: #111111;
+    --border: rgba(255,255,255,0.08);
+    --text-muted: #888888;
     --color-spotify-green: #1DB954;
     --color-spotify-black: #121212;
     --color-spotify-white: #FFFFFF;
@@ -18,6 +22,17 @@
     &::-webkit-scrollbar{
         display: none
     }
+}
+
+html {
+    scroll-behavior: smooth;
+    background-color: #0a0a0a;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #0a0a0a;
 }
 
 /* Custom utility classes for line clamping */
@@ -35,53 +50,29 @@
     overflow: hidden;
 }
 
-/* Smooth scrolling for better UX */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Custom focus styles for accessibility */
-*:focus {
-    outline: 2px solid var(--green);
+/* Focus styles */
+*:focus-visible {
+    outline: 1px solid var(--green);
     outline-offset: 2px;
 }
 
-/* Ensure proper text rendering */
-body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* Equalizer animation for Loading */
+@keyframes equalizer {
+    0%, 100% { transform: scaleY(0.25); }
+    50% { transform: scaleY(1); }
 }
 
-/* Custom scrollbar for webkit browsers */
-::-webkit-scrollbar {
-    width: 8px;
+.eq-bar {
+    transform-origin: bottom;
+    animation: equalizer 1.1s ease-in-out infinite;
 }
 
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+/* Skeleton shimmer for DataDisplay */
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--green);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #199e48;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    ::-webkit-scrollbar-track {
-        background: #2d2d2d;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: var(--green);
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #22c55e;
-    }
+.skeleton-shimmer {
+    animation: shimmer 2.2s ease-in-out infinite;
 }
